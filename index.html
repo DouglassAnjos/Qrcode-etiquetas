@@ -1,21 +1,256 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Registro de Peças</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .log { margin-top: 20px; }
-        .success { color: green; }
-        .alert { background-color: yellow; color: red; padding: 10px; display: none; position: fixed; top: 10px; right: 10px; border: 2px solid red; border-radius: 5px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .scanning-title {
+            color: #2c3e50;
+            margin: 0.5rem 0;
+            text-align: center;
+            font-size: 1rem;
+            opacity: 0.8;
+            animation: scan 2s linear infinite;
+        }
+
+        .input-section {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            height: 120px;
+            padding-top: 1rem;
+        }
+
+        .qr-container {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .qr-icon {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            z-index: 2;
+        }
+
+        .scanning-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #3498db;
+            animation: scan 2s linear infinite;
+        }
+
+        .scanning-effect:nth-child(2) {
+            animation-delay: -1s;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .last-url {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(44, 62, 80, 0.1);
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        #inputField {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .log { 
+            margin-top: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        .success { 
+            color: #2ecc71;
+            padding: 15px;
+            margin: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            background-color: #f8fff9;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .success:hover {
+            transform: translateX(5px);
+            background-color: #f0fff2;
+        }
+
+        .success .check {
+            color: #2ecc71;
+            font-size: 1.4rem;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .success .piece-number {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-right: 10px;
+        }
+
+        .success .timestamp {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .log h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .alert { 
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .status-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            display: none;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .counter {
+            text-align: center;
+            margin: 0.5rem 0 1rem 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .counter span {
+            color: #27ae60;
+            font-size: 1.3rem;
+            margin-left: 0.5rem;
+        }
+
+        .reset-button {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <h1>Registro de Peças</h1>
-    <textarea id="inputField" rows="5" cols="50" readonly></textarea>
+    <div class="container">
+        <div class="input-section">
+            <div class="qr-container">
+                <div class="qr-icon">📱</div>
+                <div class="scanning-effect"></div>
+                <div class="scanning-effect"></div>
+            </div>
+            <div class="scanning-title">Escaneando...</div>
+            <textarea id="inputField" rows="1" cols="50" readonly></textarea>
+        </div>
+
+        <div class="counter" id="counter">
+            Peças registradas: <span>0</span>
+        </div>
+
+        <div class="status-section" id="statusSection">
+            <h3>Última peça registrada:</h3>
+            <p id="lastRegistered"></p>
+        </div>
+
+        <div class="log" id="logContainer">
+            <h3>📋 Histórico de Registros de Laminação</h3>
+            <div id="logEntries"></div>
+        </div>
+    </div>
+    
     <div id="alert" class="alert"></div>
-    <div class="log" id="logContainer"></div>
     <div class="last-url" id="lastUrl"></div>
 
     <script>
@@ -23,46 +258,136 @@
         const logEntries = document.getElementById("logEntries");
         const alertBox = document.getElementById("alert");
         const inputField = document.getElementById("inputField");
+        const statusSection = document.getElementById("statusSection");
+        const lastRegistered = document.getElementById("lastRegistered");
+        const counterElement = document.getElementById("counter").querySelector("span");
         const lastUrlElement = document.getElementById("lastUrl");
         const registeredItems = new Set();
 
         // Função para atualizar o contador
         function updateCounter() {
             const total = registeredItems.size;
+            counterElement.textContent = total;
+            // Salva o total no localStorage para persistência
             localStorage.setItem('totalItems', total);
         }
 
-        // Captura a URL diretamente do rodapé
-        function captureUrlFromFooter() {
-            const url = lastUrlElement.textContent.trim();
-            if (url.includes("intprocess.app.br/avanco/peca/")) {
-                const parts = url.split("/");
-                const itemNumber = parts[parts.length - 1];
-                if (/^\d+$/.test(itemNumber)) {
-                    processInput(itemNumber);
-                }
-            }
+        // Função para reiniciar o processo
+        function resetProcess() {
+            localStorage.clear();
+            registeredItems.clear();
+            logEntries.innerHTML = "";
+            updateCounter();
+            showAlert("Processo reiniciado!");
         }
 
-        // Verifica mudanças no rodapé e captura a URL
-        const observer = new MutationObserver(() => {
-            captureUrlFromFooter();
+        // Carrega o total salvo ao iniciar
+        window.onload = function() {
+            const savedItems = JSON.parse(localStorage.getItem('registeredItems') || '[]');
+            savedItems.forEach(item => registeredItems.add(item));
+            updateCounter();
+            // Carregar o histórico de registros
+            savedItems.forEach(item => {
+                const now = new Date();
+                const date = now.toLocaleDateString();
+                const time = now.toLocaleTimeString();
+                addToLog(item, date, time);
+            });
+        }
+
+        // Função para verificar se é uma nova leitura
+        function isNewScan(value) {
+            return value.startsWith('h') || value.startsWith('H');
+        }
+
+        document.addEventListener("keydown", (event) => {
+            // Ignora teclas especiais
+            if (event.key === "Control" || event.key === "Alt" || event.key === "Shift" || 
+                event.key === "AltGraph" || event.key.length > 1) {
+                return;
+            }
+
+            if (event.key === "Enter") {
+                processInput();
+            } else {
+                if (isNewScan(event.key)) {
+                    inputField.value = "";
+                    lastUrlElement.textContent = "";
+                }
+                
+                inputField.value += event.key;
+                lastUrlElement.textContent = inputField.value;
+                
+                // Aumentando o tempo de timeout para 200ms
+                clearTimeout(window.processTimeout);
+                window.processTimeout = setTimeout(() => {
+                    try {
+                        if (inputField.value.includes("intprocess.app.br/avanco/peca/")) {
+                            const currentValue = inputField.value.trim();
+                            const parts = currentValue.split('/');
+                            const lastPart = parts[parts.length - 1];
+                            
+                            // Adicionando log para debug
+                            console.log('URL detectada:', currentValue);
+                            console.log('Último parte:', lastPart);
+                            
+                            if (/^\d+$/.test(lastPart) && lastPart.length >= 4) {
+                                processInput();
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Erro ao processar input:', error);
+                    }
+                }, 200); // Aumentado para 200ms
+            }
         });
 
-        observer.observe(lastUrlElement, { childList: true, subtree: true });
+        function processInput() {
+            try {
+                const inputValue = inputField.value.trim();
+                console.log('Processando input:', inputValue);
+                
+                const cleanUrl = inputValue.replace(/(?:Shift|Control|AltGraph)/g, '');
+                const pattern = /https?:\/\/intprocess\.app\.br\/avanco\/peca\/(\d+)/;
+                const match = cleanUrl.match(pattern);
 
-        // Função para processar a URL capturada
-        function processInput(itemNumber) {
-            const now = new Date();
-            const date = now.toLocaleDateString();
-            const time = now.toLocaleTimeString();
+                if (match) {
+                    const itemNumber = match[1];
+                    console.log('Número da peça encontrado:', itemNumber);
+                    
+                    const now = new Date();
+                    const date = now.toLocaleDateString();
+                    const time = now.toLocaleTimeString();
 
-            if (registeredItems.has(itemNumber)) {
-                showAlert(`A peça ${itemNumber} já foi registrada anteriormente!`);
-            } else {
-                registeredItems.add(itemNumber);
-                addToLog(itemNumber, date, time);
-                updateCounter();
+                    lastUrlElement.textContent = `Última URL lida: ${inputValue}`;
+
+                    // Verificar se o item já existe
+                    if (registeredItems.has(itemNumber)) {
+                        console.log('Item já registrado:', itemNumber);
+                        showAlert(`Atenção: A peça ${itemNumber} já foi registrada anteriormente!`);
+                    } else {
+                        console.log('Registrando novo item:', itemNumber);
+                        registeredItems.add(itemNumber);
+                        
+                        // Tentar salvar no localStorage
+                        try {
+                            saveRegisteredItems();
+                            addToLog(itemNumber, date, time);
+                            updateCounter();
+                            console.log('Item salvo com sucesso');
+                        } catch (storageError) {
+                            console.error('Erro ao salvar no localStorage:', storageError);
+                        }
+                    }
+
+                    // Manter a URL por mais tempo antes de limpar
+                    setTimeout(() => {
+                        inputField.value = "";
+                        lastUrlElement.textContent = inputValue;
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Erro ao processar input:', error);
             }
         }
 
@@ -74,6 +399,7 @@
             }, 3000);
         }
 
+        // Adiciona a URL lida ao histórico
         function addToLog(itemNumber, date, time) {
             const newLog = `
                 <div class='success'>
@@ -81,7 +407,30 @@
                     <span class="piece-number">Peça ${itemNumber}</span>
                     <span class="timestamp">Finalizada em ${date} às ${time}</span>
                 </div>`;
-            logContainer.insertAdjacentHTML('afterbegin', newLog);
+            logEntries.insertAdjacentHTML('afterbegin', newLog);
+        }
+
+        // Função para verificar suporte a localStorage
+        function checkLocalStorage() {
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                return true;
+            } catch (e) {
+                console.error('localStorage não suportado:', e);
+                return false;
+            }
+        }
+
+        // Modificar a função saveRegisteredItems
+        function saveRegisteredItems() {
+            if (checkLocalStorage()) {
+                const itemsArray = Array.from(registeredItems);
+                localStorage.setItem('registeredItems', JSON.stringify(itemsArray));
+                console.log('Items salvos:', itemsArray);
+            } else {
+                console.warn('localStorage não está disponível');
+            }
         }
     </script>
 </body>
