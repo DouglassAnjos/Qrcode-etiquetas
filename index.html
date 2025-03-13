@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Peças</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .log { margin-top: 20px; }
+        .success { color: green; }
+        .alert { background-color: yellow; color: red; padding: 10px; display: none; position: fixed; top: 10px; right: 10px; border: 2px solid red; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Registro de Peças</h1>
+    <textarea id="inputField" rows="5" cols="50" readonly></textarea>
+    <div id="alert" class="alert"></div>
+    <div class="log" id="logContainer"></div>
+    <div class="last-url" id="lastUrl"></div>
+
+    <script>
+        const logContainer = document.getElementById("logContainer");
+        const logEntries = document.getElementById("logEntries");
+        const alertBox = document.getElementById("alert");
+        const inputField = document.getElementById("inputField");
+        const lastUrlElement = document.getElementById("lastUrl");
+        const registeredItems = new Set();
+
+        // Função para atualizar o contador
+        function updateCounter() {
+            const total = registeredItems.size;
+            localStorage.setItem('totalItems', total);
+        }
+
+        // Captura a URL diretamente do rodapé
+        function captureUrlFromFooter() {
+            const url = lastUrlElement.textContent.trim();
+            if (url.includes("intprocess.app.br/avanco/peca/")) {
+                const parts = url.split("/");
+                const itemNumber = parts[parts.length - 1];
+                if (/^\d+$/.test(itemNumber)) {
+                    processInput(itemNumber);
+                }
+            }
+        }
+
+        // Verifica mudanças no rodapé e captura a URL
+        const observer = new MutationObserver(() => {
+            captureUrlFromFooter();
+        });
+
+        observer.observe(lastUrlElement, { childList: true, subtree: true });
+
+        // Função para processar a URL capturada
+        function processInput(itemNumber) {
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+
+            if (registeredItems.has(itemNumber)) {
+                showAlert(`A peça ${itemNumber} já foi registrada anteriormente!`);
+            } else {
+                registeredItems.add(itemNumber);
+                addToLog(itemNumber, date, time);
+                updateCounter();
+            }
+        }
+
+        function showAlert(message) {
+            alertBox.textContent = message;
+            alertBox.style.display = "block";
+            setTimeout(() => {
+                alertBox.style.display = "none";
+            }, 3000);
+        }
+
+        function addToLog(itemNumber, date, time) {
+            const newLog = `
+                <div class='success'>
+                    <span class="check">✅</span>
+                    <span class="piece-number">Peça ${itemNumber}</span>
+                    <span class="timestamp">Finalizada em ${date} às ${time}</span>
+                </div>`;
+            logContainer.insertAdjacentHTML('afterbegin', newLog);
+        }
+    </script>
+</body>
+</html>
