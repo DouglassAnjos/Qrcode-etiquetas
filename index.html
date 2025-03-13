@@ -261,7 +261,10 @@
     </div>
     
     <div id="alert" class="alert"></div>
-    <div class="last-url" id="lastUrl"></div>
+    <div class="last-url" id="lastUrl">
+        <span style="opacity: 0.5;">v1</span>
+        <span id="lastUrlText"></span>
+    </div>
 
     <script>
         const logContainer = document.getElementById("logContainer");
@@ -271,7 +274,7 @@
         const statusSection = document.getElementById("statusSection");
         const lastRegistered = document.getElementById("lastRegistered");
         const counterElement = document.getElementById("counter").querySelector("span");
-        const lastUrlElement = document.getElementById("lastUrl");
+        const lastUrlElement = document.getElementById("lastUrlText");
         const registeredItems = new Set();
 
         // Função para atualizar o contador
