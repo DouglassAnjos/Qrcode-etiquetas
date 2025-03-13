@@ -368,12 +368,28 @@
             }
         });
 
+        function normalizeUrl(url) {
+            console.log('URL original:', url);
+            showDebugLog('URL original: ' + url);
+            
+            // Substituir os caracteres especiais
+            let normalizedUrl = url
+                .replace(/\?/g, ':')
+                .replace(/œ/g, '/');
+            
+            console.log('URL normalizada:', normalizedUrl);
+            showDebugLog('URL normalizada: ' + normalizedUrl);
+            
+            return normalizedUrl;
+        }
+
         function processInput() {
             try {
                 const inputValue = inputField.value.trim();
-                console.log('Iniciando processamento do input:', inputValue);
+                const normalizedInput = normalizeUrl(inputValue);
+                console.log('Iniciando processamento do input normalizado:', normalizedInput);
                 
-                const cleanUrl = inputValue.replace(/(?:Shift|Control|AltGraph)/g, '');
+                const cleanUrl = normalizedInput.replace(/(?:Shift|Control|AltGraph)/g, '');
                 console.log('URL limpa:', cleanUrl);
                 
                 const pattern = /(?:https?:?\/\/)?(?:me)?intprocess\.app\.br\/avanco\/peca\/(\d+)/;
