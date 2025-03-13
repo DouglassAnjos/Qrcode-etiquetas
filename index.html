@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Peças</title>
+    <title>Registro de Peças v1</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -312,6 +312,7 @@
 
         document.addEventListener("keydown", (event) => {
             console.log('Tecla pressionada:', event.key);
+            showDebugLog('Tecla pressionada: ' + event.key);
             
             if (event.key === "Control" || event.key === "Alt" || event.key === "Shift" || 
                 event.key === "AltGraph" || event.key.length > 1) {
