@@ -221,6 +221,16 @@
         .reset-button {
             display: none;
         }
+
+        #debug-log {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            #debug-log {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
@@ -301,55 +311,70 @@
         }
 
         document.addEventListener("keydown", (event) => {
-            // Ignora teclas especiais
+            console.log('Tecla pressionada:', event.key);
+            
             if (event.key === "Control" || event.key === "Alt" || event.key === "Shift" || 
                 event.key === "AltGraph" || event.key.length > 1) {
+                console.log('Tecla especial ignorada');
                 return;
             }
 
             if (event.key === "Enter") {
+                console.log('Enter pressionado, processando input');
                 processInput();
             } else {
                 if (isNewScan(event.key)) {
+                    console.log('Nova leitura iniciada');
                     inputField.value = "";
                     lastUrlElement.textContent = "";
                 }
                 
                 inputField.value += event.key;
                 lastUrlElement.textContent = inputField.value;
+                console.log('Valor atual do input:', inputField.value);
                 
-                // Aumentando o tempo de timeout para 200ms
                 clearTimeout(window.processTimeout);
                 window.processTimeout = setTimeout(() => {
                     try {
+                        console.log('Verificando URL:', inputField.value);
                         if (inputField.value.includes("intprocess.app.br/avanco/peca/")) {
                             const currentValue = inputField.value.trim();
                             const parts = currentValue.split('/');
                             const lastPart = parts[parts.length - 1];
                             
-                            // Adicionando log para debug
                             console.log('URL detectada:', currentValue);
-                            console.log('Último parte:', lastPart);
+                            console.log('Partes da URL:', parts);
+                            console.log('Última parte:', lastPart);
+                            console.log('Teste de dígitos:', /^\d+$/.test(lastPart));
+                            console.log('Comprimento da última parte:', lastPart.length);
                             
                             if (/^\d+$/.test(lastPart) && lastPart.length >= 4) {
+                                console.log('URL válida, processando...');
                                 processInput();
+                            } else {
+                                console.log('URL inválida: última parte não atende aos critérios');
                             }
+                        } else {
+                            console.log('URL não contém o padrão esperado');
                         }
                     } catch (error) {
                         console.error('Erro ao processar input:', error);
                     }
-                }, 200); // Aumentado para 200ms
+                }, 200);
             }
         });
 
         function processInput() {
             try {
                 const inputValue = inputField.value.trim();
-                console.log('Processando input:', inputValue);
+                console.log('Iniciando processamento do input:', inputValue);
                 
                 const cleanUrl = inputValue.replace(/(?:Shift|Control|AltGraph)/g, '');
-                const pattern = /https?:\/\/intprocess\.app\.br\/avanco\/peca\/(\d+)/;
+                console.log('URL limpa:', cleanUrl);
+                
+                const pattern = /(?:https?:?\/\/)?(?:me)?intprocess\.app\.br\/avanco\/peca\/(\d+)/;
                 const match = cleanUrl.match(pattern);
+                console.log('Resultado do match:', match);
 
                 if (match) {
                     const itemNumber = match[1];
@@ -359,35 +384,27 @@
                     const date = now.toLocaleDateString();
                     const time = now.toLocaleTimeString();
 
-                    lastUrlElement.textContent = `Última URL lida: ${inputValue}`;
-
-                    // Verificar se o item já existe
                     if (registeredItems.has(itemNumber)) {
-                        console.log('Item já registrado:', itemNumber);
+                        console.log('Item já registrado anteriormente');
                         showAlert(`Atenção: A peça ${itemNumber} já foi registrada anteriormente!`);
                     } else {
-                        console.log('Registrando novo item:', itemNumber);
+                        console.log('Registrando novo item');
                         registeredItems.add(itemNumber);
                         
-                        // Tentar salvar no localStorage
                         try {
                             saveRegisteredItems();
                             addToLog(itemNumber, date, time);
                             updateCounter();
-                            console.log('Item salvo com sucesso');
+                            console.log('Item registrado com sucesso');
                         } catch (storageError) {
                             console.error('Erro ao salvar no localStorage:', storageError);
                         }
                     }
-
-                    // Manter a URL por mais tempo antes de limpar
-                    setTimeout(() => {
-                        inputField.value = "";
-                        lastUrlElement.textContent = inputValue;
-                    }, 1000);
+                } else {
+                    console.log('URL não corresponde ao padrão esperado');
                 }
             } catch (error) {
-                console.error('Erro ao processar input:', error);
+                console.error('Erro no processamento:', error);
             }
         }
 
@@ -431,6 +448,33 @@
             } else {
                 console.warn('localStorage não está disponível');
             }
+        }
+
+        function showDebugLog(message) {
+            const debugElement = document.getElementById('debug-log');
+            if (!debugElement) {
+                const div = document.createElement('div');
+                div.id = 'debug-log';
+                div.style.cssText = `
+                    position: fixed;
+                    top: 10px;
+                    left: 10px;
+                    background: rgba(0,0,0,0.8);
+                    color: white;
+                    padding: 10px;
+                    border-radius: 5px;
+                    font-family: monospace;
+                    font-size: 12px;
+                    max-width: 80%;
+                    max-height: 200px;
+                    overflow-y: auto;
+                    z-index: 9999;
+                `;
+                document.body.appendChild(div);
+            }
+            const log = document.getElementById('debug-log');
+            log.innerHTML += `<div>${message}</div>`;
+            log.scrollTop = log.scrollHeight;
         }
     </script>
 </body>
