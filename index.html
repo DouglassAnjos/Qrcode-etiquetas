@@ -2,10 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Peças v6</title>
+    <title>Registro de Peças v7</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -39,9 +40,9 @@
 
         .scanning-title {
             color: #2c3e50;
-            margin: 0.5rem 0;
+            margin: 0.3rem 0;
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             opacity: 0.8;
             font-weight: 500;
         }
@@ -52,7 +53,7 @@
             flex-direction: column;
             align-items: center;
             position: relative;
-            height: 150px;
+            height: 120px;
             padding-top: 1rem;
         }
 
@@ -68,8 +69,10 @@
         }
 
         .qr-icon {
-            font-size: 3rem;
-            color: #2c3e50;
+            font-size: 2.5rem;
+            color: #3498db;
+            text-shadow: 0 2px 10px rgba(52, 152, 219, 0.2);
+            transition: all 0.3s ease;
             z-index: 2;
             animation: pulse 2s infinite;
         }
@@ -146,8 +149,8 @@
         }
 
         .success { 
-            padding: 1rem;
-            margin: 0.8rem 0;
+            padding: 0.8rem;
+            margin: 0.6rem 0;
             border-radius: 10px;
             background-color: #f8fff9;
             transition: all 0.3s ease;
@@ -167,19 +170,21 @@
         }
 
         .success .piece-number {
+            font-size: 0.95rem;
             font-weight: bold;
             color: #2c3e50;
             margin-right: 10px;
         }
 
         .success .timestamp {
+            font-size: 0.8rem;
             color: #7f8c8d;
-            font-size: 0.9rem;
         }
 
         .log h3 {
+            font-size: 1.1rem;
             color: #2c3e50;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid #e0e0e0;
         }
@@ -220,19 +225,19 @@
 
         .counter {
             text-align: center;
-            margin: 1rem 0;
-            font-size: 1.4rem;
+            margin: 0.8rem 0;
+            font-size: 1.2rem;
             color: #2c3e50;
             background-color: #f8f9fa;
-            padding: 1rem;
+            padding: 0.8rem;
             border-radius: 12px;
             font-weight: bold;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .counter span {
+            font-size: 1.4rem;
             color: #27ae60;
-            font-size: 1.6rem;
             margin-left: 0.5rem;
         }
 
@@ -251,7 +256,7 @@
             
             .container {
                 border-radius: 0;
-                padding: 1rem;
+                padding: 0.8rem;
                 min-height: 100vh;
             }
             
@@ -281,6 +286,18 @@
                 transform: translateX(-50%);
                 font-size: 0.9rem;
             }
+            
+            .input-section {
+                height: 100px;
+            }
+
+            .qr-icon {
+                font-size: 2rem;
+            }
+
+            .scanning-title {
+                font-size: 0.8rem;
+            }
         }
 
         /* Animações suaves */
@@ -309,13 +326,18 @@
                 opacity: 1;
             }
         }
+
+        .qr-container:hover .qr-icon {
+            transform: scale(1.1);
+            color: #2980b9;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="input-section">
             <div class="qr-container">
-                <div class="qr-icon">📱</div>
+                <i class="fa-solid fa-qrcode qr-icon"></i>
                 <div class="scanning-effect"></div>
                 <div class="scanning-effect"></div>
             </div>
@@ -333,14 +355,14 @@
         </div>
 
         <div class="log" id="logContainer">
-            <h3>📋 Histórico de Registros de Laminação</h3>
+            <h3>📋 Registros de Laminação</h3>
             <div id="logEntries"></div>
         </div>
     </div>
     
     <div id="alert" class="alert"></div>
     <div class="last-url" id="lastUrl">
-        <span style="opacity: 0.5;">v6</span>
+        <span style="opacity: 0.5;">v7</span>
         <span id="lastUrlText"></span>
     </div>
 
