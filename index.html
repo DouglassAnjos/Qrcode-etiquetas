@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Peças v3</title>
+    <title>Registro de Peças v4</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@
     
     <div id="alert" class="alert"></div>
     <div class="last-url" id="lastUrl">
-        <span style="opacity: 0.5;">v3</span>
+        <span style="opacity: 0.5;">v4</span>
         <span id="lastUrlText"></span>
     </div>
 
@@ -340,15 +340,58 @@
             console.log('URL original:', url);
             showDebugLog('URL original: ' + url);
             
-            // Substituir os caracteres especiais
-            let normalizedUrl = url
-                .replace(/\?/g, ':')
-                .replace(/œ/g, '/');
+            // Primeiro vamos padronizar para minúsculas para evitar problemas com H/h
+            let normalizedUrl = url.toLowerCase();
             
-            console.log('URL normalizada:', normalizedUrl);
-            showDebugLog('URL normalizada: ' + normalizedUrl);
-            
+            // Padrões conhecidos de URL malformada e suas substituições
+            const urlPatterns = {
+                'https?œœintprocess.app.brœavancoœpecaœ': 'https://intprocess.app.br/avanco/peca/',
+                'https?//intprocess.app.br/avanco/peca/': 'https://intprocess.app.br/avanco/peca/',
+                'https//intprocess.app.br/avanco/peca/': 'https://intprocess.app.br/avanco/peca/',
+                'httpsœœintprocess.app.brœavancoœpecaœ': 'https://intprocess.app.br/avanco/peca/'
+            };
+
+            // Tentar cada padrão conhecido
+            for (let pattern in urlPatterns) {
+                if (normalizedUrl.includes(pattern)) {
+                    normalizedUrl = normalizedUrl.replace(pattern, urlPatterns[pattern]);
+                    console.log('URL corrigida:', normalizedUrl);
+                    showDebugLog('URL corrigida: ' + normalizedUrl);
+                    return normalizedUrl;
+                }
+            }
+
             return normalizedUrl;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 8px;
+                color: white;
+                font-size: 14px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+
+            if (type === 'success') {
+                toast.style.backgroundColor = '#2ecc71';
+            } else if (type === 'error') {
+                toast.style.backgroundColor = '#e74c3c';
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = '#f1c40f';
+            }
+
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
 
         function processInput() {
@@ -373,7 +416,7 @@
 
                         if (registeredItems.has(itemNumber)) {
                             console.log('Item já registrado');
-                            showAlert(`Atenção: A peça ${itemNumber} já foi registrada anteriormente!`);
+                            showToast(`Peça ${itemNumber} já registrada anteriormente!`, 'warning');
                         } else {
                             console.log('Registrando novo item');
                             registeredItems.add(itemNumber);
@@ -385,11 +428,15 @@
                             saveRegisteredItems();
                             addToLog(itemNumber, date, time);
                             updateCounter();
+                            showToast(`Peça ${itemNumber} registrada com sucesso!`, 'success');
                         }
                     } else {
                         console.log('Número muito curto');
                         showDebugLog('Número muito curto');
+                        showToast('Código inválido: número muito curto', 'error');
                     }
+                } else {
+                    showToast('Código inválido: nenhum número encontrado', 'error');
                 }
 
                 // Limpar o campo após processar
@@ -401,6 +448,7 @@
             } catch (error) {
                 console.error('Erro:', error);
                 showDebugLog('Erro: ' + error.message);
+                showToast('Erro ao processar código: ' + error.message, 'error');
             }
         }
 
