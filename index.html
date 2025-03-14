@@ -50,24 +50,40 @@
         }
 
         .input-section {
-            height: 80px;
-            margin-bottom: 0.5rem;
-            padding-top: 0;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            padding: 0.5rem;
+            gap: 1rem;
+            background: white;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .left-section {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: auto;
+            margin-right: 0;
+        }
+
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
         }
 
         .qr-container {
-            width: 60px;
-            height: 60px;
+            margin-bottom: 0;
+            width: 40px;
+            height: 40px;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
         }
 
         .qr-icon {
@@ -148,7 +164,7 @@
             width: 100%;
             height: 100%;
             opacity: 0;
-            pointer-events: auto;
+            pointer-events: none;
             z-index: -1;
         }
 
@@ -179,6 +195,9 @@
             background-color: #f0fff2;
             border-left: 3px solid #2ecc71;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
         }
 
         .success:hover {
@@ -343,8 +362,8 @@
             }
 
             .log {
-                height: calc(100vh - 250px);
-                padding: 0.6rem;
+                height: calc(100vh - 140px);
+                margin-top: 0.5rem;
             }
 
             .success {
@@ -363,6 +382,68 @@
 
             .success .timestamp {
                 font-size: 0.7rem;
+            }
+
+            .input-section {
+                padding: 0.5rem;
+                justify-content: space-between;
+            }
+
+            .right-controls {
+                gap: 0.5rem;
+            }
+
+            .date-filter-section {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .date-filter-section input[type="date"] {
+                width: 110px;
+                font-size: 0.8rem;
+            }
+
+            .date-filter-section label {
+                font-size: 0.7rem;
+            }
+
+            .counter {
+                margin: 0.2rem 0;
+            }
+
+            .date-filter-section.mobile-open {
+                right: 0.5rem;
+            }
+
+            .mobile-controls {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                height: 24px;
+            }
+
+            .export-button {
+                margin: 0;
+                padding: 0;
+                height: 24px;
+                display: flex;
+                align-items: center;
+            }
+
+            .date-trigger, 
+            .export-button i {
+                font-size: 1.3rem;
+                color: #0131ff;
+                line-height: 1;
+                display: flex;
+                align-items: center;
+            }
+
+            .right-controls {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                height: 24px;
             }
         }
 
@@ -411,47 +492,183 @@
 
         /* Atualizar o estilo do botão de exportar */
         .export-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            color: #0131ff;
+            position: relative;
+            z-index: 2;
+            background: none;
             border: none;
-            border-radius: 50%;
-            width: 46px;
-            height: 46px;
+            padding: 0;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 999;
-        }
-
-        .export-button:hover {
-            transform: scale(1.1);
-            color: #0139ff;
+            margin-top: 1.5rem; /* Alinha com os inputs de data */
         }
 
         .export-button i {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            color: #0131ff;
+        }
+
+        .date-filter-section {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .date-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            min-width: 130px;
+        }
+
+        .date-filter-section label {
+            color: #2c3e50;
+            font-size: 0.75rem;
+            margin-bottom: -2px;
+        }
+
+        .date-filter-section input[type="date"] {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 0.4rem;
+            font-size: 0.85rem;
+            color: #2c3e50;
+            width: 130px;
+        }
+
+        .delete-button {
+            color: #e74c3c;
+            cursor: pointer;
+            margin-left: auto;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .delete-button:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .input-section {
+                padding-right: 1rem;
+            }
+
+            .date-filter-section {
+                flex: 0 1 auto;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .input-section {
+                padding-right: 1.5rem;
+                max-width: 1200px;
+                margin-left: auto;
+                margin-right: 0;
+            }
+        }
+
+        /* Adicionar classe para quando estiver escaneando */
+        .scanning #inputField {
+            pointer-events: auto;
+        }
+
+        /* Adicionar estilos para o novo layout mobile */
+        .date-trigger {
+            display: none;
+            color: #0131ff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+
+        .date-filter-section.mobile-open {
+            display: flex;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            z-index: 1000;
+        }
+
+        @media (max-width: 767px) {
+            .date-trigger {
+                display: block;
+            }
+
+            .date-filter-section {
+                display: none; /* Esconde por padrão em mobile */
+                width: auto;
+                min-width: 280px;
+            }
+
+            .input-section {
+                position: relative;
+                flex-wrap: nowrap;
+            }
+
+            .mobile-controls {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .date-filter-section {
+                gap: 0.8rem;
+            }
+
+            .date-filter-group {
+                min-width: 110px;
+            }
+
+            .export-button {
+                margin-top: 0.1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="input-section">
-            <div class="qr-container">
-                <i class="fa-solid fa-qrcode qr-icon"></i>
-                <div class="scanning-effect"></div>
-                <div class="scanning-effect"></div>
+            <div class="left-section">
+                <div class="qr-container">
+                    <i class="fa-solid fa-qrcode qr-icon"></i>
+                    <div class="scanning-effect"></div>
+                    <div class="scanning-effect"></div>
+                </div>
+                <div class="scanning-title">Clique para iniciar</div>
             </div>
-            <div class="scanning-title">Clique para iniciar</div>
+            <div class="right-controls">
+                <div class="mobile-controls">
+                    <i class="fa-solid fa-calendar date-trigger" onclick="toggleDateFilter()"></i>
+                </div>
+                <div class="date-filter-section">
+                    <div class="date-filter-group">
+                        <label>Data inicial</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="date-filter-group">
+                        <label>Data final</label>
+                        <input type="date" id="endDate">
+                    </div>
+                </div>
+                <button class="export-button" onclick="generatePDF()">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </button>
+            </div>
             <textarea id="inputField" rows="1" cols="50"></textarea>
         </div>
 
         <div class="counter" id="counter">
-            <span>0</span>Peças registradas
+            <span id="counterNumber">0</span>
+            <span id="counterText">Escaneie um QRcode para iniciar</span>
         </div>
 
         <div class="status-section" id="statusSection">
@@ -471,10 +688,6 @@
         <span id="lastUrlText"></span>
     </div>
 
-    <button class="export-button" onclick="generatePDF()">
-        <i class="fa-solid fa-file-pdf"></i>
-    </button>
-
     <script>
         const logContainer = document.getElementById("logContainer");
         const logEntries = document.getElementById("logEntries");
@@ -489,7 +702,18 @@
         // Função para atualizar o contador
         function updateCounter() {
             const total = registeredItems.size;
-            counterElement.textContent = total;
+            const counterNumber = document.getElementById('counterNumber');
+            const counterText = document.getElementById('counterText');
+            
+            if (total === 0) {
+                counterNumber.style.display = 'none'; // Oculta o número
+                counterText.textContent = 'Escaneie um QRcode para iniciar';
+            } else {
+                counterNumber.style.display = 'inline'; // Mostra o número
+                counterNumber.textContent = total;
+                counterText.textContent = 'Peças registradas';
+            }
+            
             localStorage.setItem('totalItems', total);
         }
 
@@ -539,12 +763,14 @@
 
         function updateScanningState(isScanning) {
             if (isScanning) {
+                document.body.classList.add('scanning');
                 qrIcon.classList.add('scanning');
                 scanningTitle.textContent = 'Escaneando...';
                 scanningEffects.forEach(effect => {
                     effect.classList.add('active');
                 });
             } else {
+                document.body.classList.remove('scanning');
                 qrIcon.classList.remove('scanning');
                 scanningTitle.textContent = 'Clique para iniciar';
                 scanningEffects.forEach(effect => {
@@ -553,9 +779,15 @@
             }
         }
 
-        document.addEventListener('click', () => {
-            inputField.focus();
-            updateScanningState(true);
+        document.addEventListener('click', (e) => {
+            const isInteractive = e.target.closest('.date-filter-section') || 
+                                 e.target.closest('.export-button') ||
+                                 e.target.closest('.date-trigger');
+            
+            if (!isInteractive) {
+                inputField.focus();
+                updateScanningState(true);
+            }
         });
 
         window.addEventListener('load', () => {
@@ -706,6 +938,7 @@
                     <span class="check">✓</span>
                     <span class="piece-number">Peça ${itemNumber}</span>
                     <span class="timestamp">${date} às ${time}</span>
+                    <i class="fa-solid fa-trash delete-button" onclick="deleteItem('${itemNumber}')"></i>
                 </div>`;
             logEntries.insertAdjacentHTML('afterbegin', newLog);
         }
@@ -813,6 +1046,65 @@
                     console.error('Erro ao gerar PDF:', err);
                     showToast("Erro ao gerar relatório", "error");
                 });
+        }
+
+        function deleteItem(itemNumber) {
+            if (confirm('Deseja realmente excluir esta peça?')) {
+                registeredItems.delete(itemNumber);
+                saveRegisteredItems();
+                updateCounter();
+                const items = document.querySelectorAll('.success');
+                items.forEach(item => {
+                    if (item.querySelector('.piece-number').textContent === `Peça ${itemNumber}`) {
+                        item.remove();
+                    }
+                });
+                showToast('Peça excluída com sucesso!', 'success');
+            }
+        }
+
+        function filterByDateRange() {
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            endDate.setHours(23, 59, 59);
+
+            const items = document.querySelectorAll('.success');
+            items.forEach(item => {
+                const timestamp = item.querySelector('.timestamp').textContent;
+                const itemDate = new Date(timestamp.split(' às ')[0]);
+                
+                if (itemDate >= startDate && itemDate <= endDate) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById('startDate').valueAsDate = new Date();
+        document.getElementById('endDate').valueAsDate = new Date();
+        document.getElementById('startDate').addEventListener('change', filterByDateRange);
+        document.getElementById('endDate').addEventListener('change', filterByDateRange);
+
+        // Adicionar função para controlar a visibilidade do filtro de data
+        function toggleDateFilter() {
+            const dateSection = document.querySelector('.date-filter-section');
+            dateSection.classList.toggle('mobile-open');
+            
+            // Fechar o filtro quando clicar fora dele
+            const closeFilter = (e) => {
+                if (!e.target.closest('.date-filter-section') && 
+                    !e.target.closest('.date-trigger')) {
+                    dateSection.classList.remove('mobile-open');
+                    document.removeEventListener('click', closeFilter);
+                }
+            };
+            
+            if (dateSection.classList.contains('mobile-open')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeFilter);
+                }, 100);
+            }
         }
     </script>
 
