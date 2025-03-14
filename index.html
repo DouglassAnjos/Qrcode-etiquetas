@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Peças v1</title>
+    <title>Registro de Peças v2</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -109,9 +109,12 @@
         }
 
         #inputField {
-            position: absolute;
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
             opacity: 0;
-            pointer-events: none;
+            height: 1px;
+            width: 1px;
         }
 
         .log { 
@@ -242,7 +245,7 @@
                 <div class="scanning-effect"></div>
             </div>
             <div class="scanning-title">Escaneando...</div>
-            <textarea id="inputField" rows="1" cols="50" readonly></textarea>
+            <textarea id="inputField" rows="1" cols="50"></textarea>
         </div>
 
         <div class="counter" id="counter">
@@ -262,7 +265,7 @@
     
     <div id="alert" class="alert"></div>
     <div class="last-url" id="lastUrl">
-        <span style="opacity: 0.5;">v1</span>
+        <span style="opacity: 0.5;">v2</span>
         <span id="lastUrlText"></span>
     </div>
 
@@ -313,59 +316,33 @@
             return value.startsWith('h') || value.startsWith('H');
         }
 
-        document.addEventListener("keydown", (event) => {
-            console.log('Tecla pressionada:', event.key);
-            showDebugLog('Tecla pressionada: ' + event.key);
+        inputField.addEventListener("input", (event) => {
+            console.log('Input detectado:', event.target.value);
+            showDebugLog('Input detectado: ' + event.target.value);
             
-            if (event.key === "Control" || event.key === "Alt" || event.key === "Shift" || 
-                event.key === "AltGraph" || event.key.length > 1) {
-                console.log('Tecla especial ignorada');
-                return;
-            }
+            const currentValue = event.target.value;
+            lastUrlElement.textContent = currentValue;
 
-            if (event.key === "Enter") {
-                console.log('Enter pressionado, processando input');
-                processInput();
-            } else {
-                if (isNewScan(event.key)) {
-                    console.log('Nova leitura iniciada');
-                    inputField.value = "";
-                    lastUrlElement.textContent = "";
-                }
-                
-                inputField.value += event.key;
-                lastUrlElement.textContent = inputField.value;
-                console.log('Valor atual do input:', inputField.value);
-                
-                clearTimeout(window.processTimeout);
-                window.processTimeout = setTimeout(() => {
-                    try {
-                        console.log('Verificando URL:', inputField.value);
-                        if (inputField.value.includes("intprocess.app.br/avanco/peca/")) {
-                            const currentValue = inputField.value.trim();
-                            const parts = currentValue.split('/');
-                            const lastPart = parts[parts.length - 1];
-                            
-                            console.log('URL detectada:', currentValue);
-                            console.log('Partes da URL:', parts);
-                            console.log('Última parte:', lastPart);
-                            console.log('Teste de dígitos:', /^\d+$/.test(lastPart));
-                            console.log('Comprimento da última parte:', lastPart.length);
-                            
-                            if (/^\d+$/.test(lastPart) && lastPart.length >= 4) {
-                                console.log('URL válida, processando...');
-                                processInput();
-                            } else {
-                                console.log('URL inválida: última parte não atende aos critérios');
-                            }
-                        } else {
-                            console.log('URL não contém o padrão esperado');
-                        }
-                    } catch (error) {
-                        console.error('Erro ao processar input:', error);
+            clearTimeout(window.processTimeout);
+            window.processTimeout = setTimeout(() => {
+                try {
+                    if (currentValue.includes("intprocess.app.br") || 
+                        currentValue.includes("meintprocess.app.br")) {
+                        processInput();
                     }
-                }, 200);
-            }
+                } catch (error) {
+                    console.error('Erro ao processar:', error);
+                    showDebugLog('Erro: ' + error.message);
+                }
+            }, 300); // Aumentei o timeout para dar mais tempo
+        });
+
+        document.addEventListener('click', () => {
+            inputField.focus();
+        });
+
+        window.addEventListener('load', () => {
+            inputField.focus();
         });
 
         function normalizeUrl(url) {
@@ -423,8 +400,15 @@
                 } else {
                     console.log('URL não corresponde ao padrão esperado');
                 }
+
+                // Após processar, limpe o campo
+                setTimeout(() => {
+                    inputField.value = '';
+                    inputField.focus();
+                }, 100);
             } catch (error) {
                 console.error('Erro no processamento:', error);
+                showDebugLog('Erro no processamento: ' + error.message);
             }
         }
 
