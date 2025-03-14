@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Peças v2</title>
+    <title>Registro de Peças v3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@
     
     <div id="alert" class="alert"></div>
     <div class="last-url" id="lastUrl">
-        <span style="opacity: 0.5;">v2</span>
+        <span style="opacity: 0.5;">v3</span>
         <span id="lastUrlText"></span>
     </div>
 
@@ -317,24 +317,15 @@
         }
 
         inputField.addEventListener("input", (event) => {
-            console.log('Input detectado:', event.target.value);
-            showDebugLog('Input detectado: ' + event.target.value);
-            
             const currentValue = event.target.value;
             lastUrlElement.textContent = currentValue;
-
+            
             clearTimeout(window.processTimeout);
             window.processTimeout = setTimeout(() => {
-                try {
-                    if (currentValue.includes("intprocess.app.br") || 
-                        currentValue.includes("meintprocess.app.br")) {
-                        processInput();
-                    }
-                } catch (error) {
-                    console.error('Erro ao processar:', error);
-                    showDebugLog('Erro: ' + error.message);
+                if (currentValue.length > 0) {
+                    processInput();
                 }
-            }, 300); // Aumentei o timeout para dar mais tempo
+            }, 300);
         });
 
         document.addEventListener('click', () => {
@@ -363,52 +354,53 @@
         function processInput() {
             try {
                 const inputValue = inputField.value.trim();
-                const normalizedInput = normalizeUrl(inputValue);
-                console.log('Iniciando processamento do input normalizado:', normalizedInput);
+                console.log('Input recebido:', inputValue);
+                showDebugLog('Input recebido: ' + inputValue);
                 
-                const cleanUrl = normalizedInput.replace(/(?:Shift|Control|AltGraph)/g, '');
-                console.log('URL limpa:', cleanUrl);
-                
-                const pattern = /(?:https?:?\/\/)?(?:me)?intprocess\.app\.br\/avanco\/peca\/(\d+)/;
-                const match = cleanUrl.match(pattern);
-                console.log('Resultado do match:', match);
+                // Extrair apenas os números do input
+                const numbers = inputValue.match(/\d+/g);
+                console.log('Números encontrados:', numbers);
+                showDebugLog('Números encontrados: ' + numbers);
 
-                if (match) {
-                    const itemNumber = match[1];
-                    console.log('Número da peça encontrado:', itemNumber);
+                if (numbers && numbers.length > 0) {
+                    // Pegar o último grupo de números (que deve ser o ID da peça)
+                    const itemNumber = numbers[numbers.length - 1];
                     
-                    const now = new Date();
-                    const date = now.toLocaleDateString();
-                    const time = now.toLocaleTimeString();
+                    // Verificar se o número tem pelo menos 4 dígitos
+                    if (itemNumber.length >= 4) {
+                        console.log('Número da peça:', itemNumber);
+                        showDebugLog('Número da peça: ' + itemNumber);
 
-                    if (registeredItems.has(itemNumber)) {
-                        console.log('Item já registrado anteriormente');
-                        showAlert(`Atenção: A peça ${itemNumber} já foi registrada anteriormente!`);
-                    } else {
-                        console.log('Registrando novo item');
-                        registeredItems.add(itemNumber);
-                        
-                        try {
+                        if (registeredItems.has(itemNumber)) {
+                            console.log('Item já registrado');
+                            showAlert(`Atenção: A peça ${itemNumber} já foi registrada anteriormente!`);
+                        } else {
+                            console.log('Registrando novo item');
+                            registeredItems.add(itemNumber);
+                            
+                            const now = new Date();
+                            const date = now.toLocaleDateString();
+                            const time = now.toLocaleTimeString();
+                            
                             saveRegisteredItems();
                             addToLog(itemNumber, date, time);
                             updateCounter();
-                            console.log('Item registrado com sucesso');
-                        } catch (storageError) {
-                            console.error('Erro ao salvar no localStorage:', storageError);
                         }
+                    } else {
+                        console.log('Número muito curto');
+                        showDebugLog('Número muito curto');
                     }
-                } else {
-                    console.log('URL não corresponde ao padrão esperado');
                 }
 
-                // Após processar, limpe o campo
+                // Limpar o campo após processar
                 setTimeout(() => {
                     inputField.value = '';
                     inputField.focus();
                 }, 100);
+
             } catch (error) {
-                console.error('Erro no processamento:', error);
-                showDebugLog('Erro no processamento: ' + error.message);
+                console.error('Erro:', error);
+                showDebugLog('Erro: ' + error.message);
             }
         }
 
