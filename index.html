@@ -20,7 +20,7 @@
         <button onclick="resetCamera()">Redefinir Câmera</button>
     </div>
     <div id="log">Log de erros aparecerá aqui...</div>
-    <div id="version">Versão 1.0.8</div>
+    <div id="version">Versão 1.0.9</div>
     <script>
         let scene, camera, renderer, controls;
 
@@ -64,12 +64,29 @@
 
             const geometry = new THREE.BufferGeometry();
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(cleanJson.vertices, 3));
+            
+            // Adicionar coordenadas UV se existirem no JSON
+            if (cleanJson.uvs) {
+                geometry.setAttribute('uv', new THREE.Float32BufferAttribute(cleanJson.uvs, 2));
+            } else {
+                // Criar UVs básicas se não existirem
+                const positions = geometry.attributes.position.array;
+                const uvs = [];
+                for (let i = 0; i < positions.length; i += 3) {
+                    uvs.push(positions[i] / 1000, positions[i + 1] / 1000);
+                }
+                geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+            }
+
             geometry.setIndex(cleanJson.faces);
             geometry.computeVertexNormals();
 
+            // Criar material com configurações apropriadas para textura
             const material = new THREE.MeshStandardMaterial({
-                color: 0xff0000,
-                side: THREE.DoubleSide
+                color: 0xffffff, // Cor branca para não interferir com a textura
+                side: THREE.DoubleSide,
+                roughness: 0.7,
+                metalness: 0.0
             });
 
             const mesh = new THREE.Mesh(geometry, material);
@@ -78,9 +95,11 @@
             if (cleanJson.texture) {
                 loadTexture(cleanJson.texture).then(texture => {
                     if (texture) {
+                        texture.encoding = THREE.sRGBEncoding;
+                        texture.flipY = false; // Tente false se a textura estiver invertida
                         material.map = texture;
                         material.needsUpdate = true;
-                        logError(`Textura ${cleanJson.texture} carregada com sucesso!`);
+                        logError(`Textura ${cleanJson.texture} carregada e aplicada com sucesso!`);
                     }
                 }).catch(error => {
                     logError(`Erro ao carregar a textura: ${cleanJson.texture}`);
@@ -97,6 +116,8 @@
                     `./${textureName}`,
                     (texture) => {
                         texture.needsUpdate = true;
+                        texture.wrapS = THREE.RepeatWrapping;
+                        texture.wrapT = THREE.RepeatWrapping;
                         resolve(texture);
                     },
                     undefined,
