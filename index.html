@@ -16,50 +16,52 @@
 </head>
 <body>
     <div id="controls">
-        <input type="file" id="fileInput" accept="application/json">
-        <button onclick="resetCamera()">Redefinir Câmera</button>
-        <button onclick="clearScene()">Limpar Cena</button>
+        <input type="file" id="fileInput" accept=".json">
+        <button class="button" onclick="clearScene()">Limpar Cena</button>
+        <button class="button" onclick="toggleWireframe()">Alternar Wireframe</button>
+        <div>Versão 1.2.0</div>
     </div>
-    <div id="log">Log de erros aparecerá aqui...</div>
+    <div id="log"></div>
     <div id="version">Versão 1.1.1</div>
+    <div id="container"></div>
     <script>
         let scene, camera, renderer, controls;
         let loadedMaterials = new Map();
         let loadedObjects = new Map();
+        let wireframeMode = false;
 
         function init() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+            scene.background = new THREE.Color(0xf0f0f0);
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+            camera.position.set(500, 500, 500);
+
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight - 150);
-            document.body.appendChild(renderer.domElement);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.getElementById('container').appendChild(renderer.domElement);
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.screenSpacePanning = false;
-            controls.enableRotate = true;
-            controls.enableZoom = true;
-            controls.enablePan = true;
-            controls.minDistance = 100;
-            controls.maxDistance = 3000;
-            controls.target.set(400, 250, 0);
-
-            const light = new THREE.AmbientLight(0x404040);
-            scene.add(light);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(5, 5, 5).normalize();
-            scene.add(directionalLight);
-
-            camera.position.set(400, 250, 1500);
+            
+            setupLighting();
+            setupEventListeners();
             animate();
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
+        function setupLighting() {
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(500, 1000, 500);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+        }
+
+        function setupEventListeners() {
+            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+            window.addEventListener('resize', onWindowResize);
         }
 
         async function loadMaterial(materialData) {
@@ -67,132 +69,167 @@
                 return loadedMaterials.get(materialData.id);
             }
 
-            const material = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                side: materialData.properties.side === 'double' ? THREE.DoubleSide : THREE.FrontSide,
-                roughness: materialData.properties.roughness || 0.7,
-                metalness: materialData.properties.metalness || 0.0
+            const material = new THREE.MeshPhongMaterial({
+                color: 0xcccccc,
+                side: materialData.properties.side === 'double' ? THREE.DoubleSide : THREE.FrontSide
             });
 
             if (materialData.texture) {
                 try {
-                    const texture = await loadTexture(materialData.texture);
-                    if (texture) {
-                        texture.colorSpace = THREE.SRGBColorSpace;
-                        texture.flipY = false;
-                        material.map = texture;
-                        material.needsUpdate = true;
-                    }
+                    const texture = await new Promise((resolve, reject) => {
+                        new THREE.TextureLoader().load(
+                            materialData.texture,
+                            resolve,
+                            undefined,
+                            reject
+                        );
+                    });
+                    material.map = texture;
+                    logMessage(`Textura carregada: ${materialData.texture}`);
                 } catch (error) {
-                    logError(`Erro ao carregar textura ${materialData.texture}: ${error}`);
+                    logError(`Erro ao carregar textura ${materialData.texture}: ${error.message}`);
                 }
             }
 
+            material.roughness = materialData.properties.roughness || 0.5;
+            material.metalness = materialData.properties.metalness || 0.0;
+            
             loadedMaterials.set(materialData.id, material);
             return material;
-        }
-
-        function loadTexture(textureName) {
-            return new Promise((resolve, reject) => {
-                const loader = new THREE.TextureLoader();
-                loader.load(
-                    `./${textureName}`,
-                    (texture) => {
-                        texture.needsUpdate = true;
-                        texture.wrapS = THREE.RepeatWrapping;
-                        texture.wrapT = THREE.RepeatWrapping;
-                        resolve(texture);
-                    },
-                    undefined,
-                    (error) => reject(error)
-                );
-            });
         }
 
         async function loadObject(objectData, materials) {
             const geometry = new THREE.BufferGeometry();
             
-            if (objectData.vertices && objectData.vertices.length > 0) {
-                geometry.setAttribute('position', new THREE.Float32BufferAttribute(objectData.vertices, 3));
-                
-                if (objectData.uvs && objectData.uvs.length > 0) {
-                    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(objectData.uvs, 2));
-                } else {
-                    const positions = geometry.attributes.position.array;
-                    const uvs = [];
-                    for (let i = 0; i < positions.length; i += 3) {
-                        uvs.push(positions[i] / 1000, positions[i + 1] / 1000);
-                    }
-                    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-                }
-
-                if (objectData.faces && objectData.faces.length > 0) {
-                    geometry.setIndex(objectData.faces);
-                }
-
-                geometry.computeVertexNormals();
+            // Vertices
+            const vertices = new Float32Array(objectData.vertices);
+            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            
+            // Faces
+            geometry.setIndex(objectData.faces);
+            
+            // UVs
+            if (objectData.uvs) {
+                const uvs = new Float32Array(objectData.uvs);
+                geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
             }
 
+            // Material
             const material = await loadMaterial(materials.find(m => m.id === objectData.material));
+            
+            // Mesh
             const mesh = new THREE.Mesh(geometry, material);
-
-            if (objectData.position) {
-                mesh.position.set(...objectData.position);
-            }
-            if (objectData.rotation) {
-                mesh.rotation.set(...objectData.rotation);
-            }
-            if (objectData.scale) {
-                mesh.scale.set(...objectData.scale);
+            mesh.position.set(...objectData.position);
+            mesh.rotation.set(...objectData.rotation);
+            mesh.scale.set(...objectData.scale);
+            
+            // Cutting data visualization
+            if (objectData.cutting_data) {
+                addCuttingDataVisualization(mesh, objectData.cutting_data);
             }
 
             loadedObjects.set(objectData.name, mesh);
             return mesh;
         }
 
-        async function loadModel(json) {
+        function addCuttingDataVisualization(parentMesh, cuttingData) {
+            if (cuttingData.outline_2d) {
+                const outlineGeometry = new THREE.BufferGeometry();
+                const outlinePoints = cuttingData.outline_2d.flat();
+                outlineGeometry.setAttribute('position', 
+                    new THREE.Float32BufferAttribute(outlinePoints.concat(outlinePoints.slice(0, 2)), 3));
+                
+                const outlineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+                const outline = new THREE.Line(outlineGeometry, outlineMaterial);
+                parentMesh.add(outline);
+            }
+
+            if (cuttingData.internal_cuts) {
+                cuttingData.internal_cuts.forEach(cut => {
+                    if (cut.type === 'circle') {
+                        const curve = new THREE.EllipseCurve(
+                            cut.center[0], cut.center[1],
+                            cut.radius, cut.radius
+                        );
+                        const points = curve.getPoints(50);
+                        const circleGeometry = new THREE.BufferGeometry().setFromPoints(points);
+                        const circleMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+                        const circle = new THREE.Line(circleGeometry, circleMaterial);
+                        parentMesh.add(circle);
+                    }
+                });
+            }
+        }
+
+        async function loadModel(jsonData) {
             try {
-                const cleanJson = JSON.parse(JSON.stringify(json).replace(/\/\*.*?\*\//g, "").replace(/\/\/.*$/gm, ""));
+                clearScene();
                 
                 // Carregar materiais
-                if (cleanJson.materials) {
-                    for (const materialData of cleanJson.materials) {
-                        await loadMaterial(materialData);
-                    }
+                for (const materialData of jsonData.materials) {
+                    await loadMaterial(materialData);
                 }
-
+                
                 // Carregar objetos
-                if (cleanJson.objects) {
-                    for (const objectData of cleanJson.objects) {
-                        const mesh = await loadObject(objectData, cleanJson.materials || []);
-                        scene.add(mesh);
-                    }
+                for (const objectData of jsonData.objects) {
+                    const mesh = await loadObject(objectData, jsonData.materials);
+                    scene.add(mesh);
                 }
-
+                
                 // Processar grupos
-                if (cleanJson.groups) {
-                    for (const groupData of cleanJson.groups) {
+                if (jsonData.groups) {
+                    for (const groupData of jsonData.groups) {
                         const group = new THREE.Group();
-                        for (const objectName of groupData.objects) {
+                        groupData.objects.forEach(objectName => {
                             const object = loadedObjects.get(objectName);
                             if (object) {
                                 group.add(object.clone());
                             }
-                        }
-                        if (groupData.position) {
-                            group.position.set(...groupData.position);
-                        }
-                        if (groupData.rotation) {
-                            group.rotation.set(...groupData.rotation);
-                        }
+                        });
+                        group.position.set(...groupData.position);
+                        group.rotation.set(...groupData.rotation);
                         scene.add(group);
                     }
                 }
 
-                logError("Modelo carregado com sucesso!");
+                // Ajustar câmera
+                const box = new THREE.Box3().setFromObject(scene);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = camera.fov * (Math.PI / 180);
+                const cameraDistance = Math.abs(maxDim / Math.sin(fov / 2) / 2);
+                
+                camera.position.copy(center);
+                camera.position.x += cameraDistance;
+                camera.position.y += cameraDistance;
+                camera.position.z += cameraDistance;
+                camera.lookAt(center);
+                
+                controls.target.copy(center);
+                controls.update();
+
+                logMessage('Modelo carregado com sucesso!');
             } catch (error) {
                 logError(`Erro ao carregar modelo: ${error.message}`);
             }
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+                    loadModel(jsonData);
+                } catch (error) {
+                    logError(`Erro ao carregar o arquivo JSON: ${error.message}`);
+                }
+            };
+            reader.readAsText(file);
         }
 
         function clearScene() {
@@ -201,52 +238,43 @@
             }
             loadedMaterials.clear();
             loadedObjects.clear();
-            
-            const light = new THREE.AmbientLight(0x404040);
-            scene.add(light);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(5, 5, 5).normalize();
-            scene.add(directionalLight);
-            
-            logError("Cena limpa!");
+            setupLighting();
+            logMessage('Cena limpa');
+        }
+
+        function toggleWireframe() {
+            wireframeMode = !wireframeMode;
+            loadedMaterials.forEach(material => {
+                material.wireframe = wireframeMode;
+            });
+            logMessage(`Modo wireframe: ${wireframeMode ? 'Ativado' : 'Desativado'}`);
+        }
+
+        function logMessage(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `<div>${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
         }
 
         function logError(message) {
             const logDiv = document.getElementById('log');
-            logDiv.innerHTML += `<p>${message}</p>`;
+            logDiv.innerHTML += `<div style="color: red">${message}</div>`;
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        document.getElementById('fileInput').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                try {
-                    const json = JSON.parse(e.target.result);
-                    loadModel(json);
-                } catch (error) {
-                    logError('Erro ao carregar o arquivo JSON: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-        });
-
-        function resetCamera() {
-            camera.position.set(400, 250, 1500);
-            controls.target.set(400, 250, 0);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        window.addEventListener('resize', () => {
-            renderer.setSize(window.innerWidth, window.innerHeight - 150);
-            camera.aspect = window.innerWidth / (window.innerHeight - 150);
-            camera.updateProjectionMatrix();
-        });
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            init();
-        });
+        init();
     </script>
 </body>
 </html>
