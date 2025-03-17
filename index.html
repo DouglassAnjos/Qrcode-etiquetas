@@ -20,7 +20,7 @@
         <button onclick="resetCamera()">Redefinir Câmera</button>
     </div>
     <div id="log">Log de erros aparecerá aqui...</div>
-    <div id="version">Versão 1.0.5</div>
+    <div id="version">Versão 1.0.6</div>
     <script>
         let scene, camera, renderer, controls;
 
@@ -60,21 +60,32 @@
         }
 
         function loadModel(json) {
-            const points = [];
-            for (let i = 0; i < json.vertices.length; i += 3) {
-                points.push(new THREE.Vector3(json.vertices[i], json.vertices[i + 1], json.vertices[i + 2]));
-            }
-            points.push(points[0]); // Fecha a polilinha
+            const geometry = new THREE.BufferGeometry();
 
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            // Definindo os vértices
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(json.vertices, 3));
 
-            const material = new THREE.LineBasicMaterial({
-                color: 0xff0000, // Cor visível
-                linewidth: 5  // Espessura da linha
+            // Definindo as faces (índices)
+            geometry.setIndex(json.faces);
+            geometry.computeVertexNormals();
+
+            const material = new THREE.MeshBasicMaterial({
+                map: loadTexture(json.texture) || new THREE.Color(0xff0000),
+                side: THREE.DoubleSide
             });
 
-            const line = new THREE.Line(geometry, material);
-            scene.add(line);
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+        }
+
+        function loadTexture(textureName) {
+            if (!textureName) return null;
+            const loader = new THREE.TextureLoader();
+            return loader.load(`./${textureName}`,
+                undefined,
+                undefined,
+                () => logError(`Erro ao carregar a textura: ${textureName}`)
+            );
         }
 
         function logError(message) {
