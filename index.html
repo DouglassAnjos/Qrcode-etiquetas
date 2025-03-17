@@ -18,11 +18,14 @@
     <div id="controls">
         <input type="file" id="fileInput" accept="application/json">
         <button onclick="resetCamera()">Redefinir Câmera</button>
+        <button onclick="clearScene()">Limpar Cena</button>
     </div>
     <div id="log">Log de erros aparecerá aqui...</div>
-    <div id="version">Versão 1.0.9</div>
+    <div id="version">Versão 1.1.1</div>
     <script>
         let scene, camera, renderer, controls;
+        let loadedMaterials = new Map();
+        let loadedObjects = new Map();
 
         function init() {
             scene = new THREE.Scene();
@@ -59,57 +62,37 @@
             renderer.render(scene, camera);
         }
 
-        function loadModel(json) {
-            const cleanJson = JSON.parse(JSON.stringify(json).replace(/\/\*.*?\*\//g, "").replace(/\/\/.*$/gm, ""));
-
-            const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(cleanJson.vertices, 3));
-            
-            // Adicionar coordenadas UV se existirem no JSON
-            if (cleanJson.uvs) {
-                geometry.setAttribute('uv', new THREE.Float32BufferAttribute(cleanJson.uvs, 2));
-            } else {
-                // Criar UVs básicas se não existirem
-                const positions = geometry.attributes.position.array;
-                const uvs = [];
-                for (let i = 0; i < positions.length; i += 3) {
-                    uvs.push(positions[i] / 1000, positions[i + 1] / 1000);
-                }
-                geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+        async function loadMaterial(materialData) {
+            if (loadedMaterials.has(materialData.id)) {
+                return loadedMaterials.get(materialData.id);
             }
 
-            geometry.setIndex(cleanJson.faces);
-            geometry.computeVertexNormals();
-
-            // Criar material com configurações apropriadas para textura
             const material = new THREE.MeshStandardMaterial({
-                color: 0xffffff, // Cor branca para não interferir com a textura
-                side: THREE.DoubleSide,
-                roughness: 0.7,
-                metalness: 0.0
+                color: 0xffffff,
+                side: materialData.properties.side === 'double' ? THREE.DoubleSide : THREE.FrontSide,
+                roughness: materialData.properties.roughness || 0.7,
+                metalness: materialData.properties.metalness || 0.0
             });
 
-            const mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-
-            if (cleanJson.texture) {
-                loadTexture(cleanJson.texture).then(texture => {
+            if (materialData.texture) {
+                try {
+                    const texture = await loadTexture(materialData.texture);
                     if (texture) {
-                        texture.encoding = THREE.sRGBEncoding;
-                        texture.flipY = false; // Tente false se a textura estiver invertida
+                        texture.colorSpace = THREE.SRGBColorSpace;
+                        texture.flipY = false;
                         material.map = texture;
                         material.needsUpdate = true;
-                        logError(`Textura ${cleanJson.texture} carregada e aplicada com sucesso!`);
                     }
-                }).catch(error => {
-                    logError(`Erro ao carregar a textura: ${cleanJson.texture}`);
-                });
+                } catch (error) {
+                    logError(`Erro ao carregar textura ${materialData.texture}: ${error}`);
+                }
             }
+
+            loadedMaterials.set(materialData.id, material);
+            return material;
         }
 
         function loadTexture(textureName) {
-            if (!textureName) return Promise.resolve(null);
-            
             return new Promise((resolve, reject) => {
                 const loader = new THREE.TextureLoader();
                 loader.load(
@@ -121,16 +104,117 @@
                         resolve(texture);
                     },
                     undefined,
-                    (error) => {
-                        reject(error);
-                    }
+                    (error) => reject(error)
                 );
             });
+        }
+
+        async function loadObject(objectData, materials) {
+            const geometry = new THREE.BufferGeometry();
+            
+            if (objectData.vertices && objectData.vertices.length > 0) {
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(objectData.vertices, 3));
+                
+                if (objectData.uvs && objectData.uvs.length > 0) {
+                    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(objectData.uvs, 2));
+                } else {
+                    const positions = geometry.attributes.position.array;
+                    const uvs = [];
+                    for (let i = 0; i < positions.length; i += 3) {
+                        uvs.push(positions[i] / 1000, positions[i + 1] / 1000);
+                    }
+                    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+                }
+
+                if (objectData.faces && objectData.faces.length > 0) {
+                    geometry.setIndex(objectData.faces);
+                }
+
+                geometry.computeVertexNormals();
+            }
+
+            const material = await loadMaterial(materials.find(m => m.id === objectData.material));
+            const mesh = new THREE.Mesh(geometry, material);
+
+            if (objectData.position) {
+                mesh.position.set(...objectData.position);
+            }
+            if (objectData.rotation) {
+                mesh.rotation.set(...objectData.rotation);
+            }
+            if (objectData.scale) {
+                mesh.scale.set(...objectData.scale);
+            }
+
+            loadedObjects.set(objectData.name, mesh);
+            return mesh;
+        }
+
+        async function loadModel(json) {
+            try {
+                const cleanJson = JSON.parse(JSON.stringify(json).replace(/\/\*.*?\*\//g, "").replace(/\/\/.*$/gm, ""));
+                
+                // Carregar materiais
+                if (cleanJson.materials) {
+                    for (const materialData of cleanJson.materials) {
+                        await loadMaterial(materialData);
+                    }
+                }
+
+                // Carregar objetos
+                if (cleanJson.objects) {
+                    for (const objectData of cleanJson.objects) {
+                        const mesh = await loadObject(objectData, cleanJson.materials || []);
+                        scene.add(mesh);
+                    }
+                }
+
+                // Processar grupos
+                if (cleanJson.groups) {
+                    for (const groupData of cleanJson.groups) {
+                        const group = new THREE.Group();
+                        for (const objectName of groupData.objects) {
+                            const object = loadedObjects.get(objectName);
+                            if (object) {
+                                group.add(object.clone());
+                            }
+                        }
+                        if (groupData.position) {
+                            group.position.set(...groupData.position);
+                        }
+                        if (groupData.rotation) {
+                            group.rotation.set(...groupData.rotation);
+                        }
+                        scene.add(group);
+                    }
+                }
+
+                logError("Modelo carregado com sucesso!");
+            } catch (error) {
+                logError(`Erro ao carregar modelo: ${error.message}`);
+            }
+        }
+
+        function clearScene() {
+            while(scene.children.length > 0) { 
+                scene.remove(scene.children[0]); 
+            }
+            loadedMaterials.clear();
+            loadedObjects.clear();
+            
+            const light = new THREE.AmbientLight(0x404040);
+            scene.add(light);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 5, 5).normalize();
+            scene.add(directionalLight);
+            
+            logError("Cena limpa!");
         }
 
         function logError(message) {
             const logDiv = document.getElementById('log');
             logDiv.innerHTML += `<p>${message}</p>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
         }
 
         document.getElementById('fileInput').addEventListener('change', function (event) {
