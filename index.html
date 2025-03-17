@@ -20,7 +20,7 @@
         <button onclick="resetCamera()">Redefinir Câmera</button>
     </div>
     <div id="log">Log de erros aparecerá aqui...</div>
-    <div id="version">Versão 1.0.3</div>
+    <div id="version">Versão 1.0.4</div>
     <script>
         let scene, camera, renderer, controls;
 
@@ -64,8 +64,8 @@
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(json.vertices, 3));
 
             const material = new THREE.MeshBasicMaterial({
-                map: loadTexture(json.texture) || new THREE.Color(0xff0000), // Cor vermelha se não houver textura
-                side: THREE.DoubleSide
+                map: loadTexture(json.texture) || new THREE.Color(0xff0000), 
+                side: THREE.DoubleSide  // Garante que ambos os lados do plano sejam visíveis
             });
 
             const mesh = new THREE.Mesh(geometry, material);
