@@ -20,7 +20,7 @@
         <button onclick="resetCamera()">Redefinir Câmera</button>
     </div>
     <div id="log">Log de erros aparecerá aqui...</div>
-    <div id="version">Versão 1.0.4</div>
+    <div id="version">Versão 1.0.5</div>
     <script>
         let scene, camera, renderer, controls;
 
@@ -35,21 +35,21 @@
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.screenSpacePanning = false;
-            controls.enableRotate = true; // Permitir rotação
-            controls.enableZoom = true;   // Permitir zoom
-            controls.enablePan = true;    // Permitir mover lateralmente
+            controls.enableRotate = true;
+            controls.enableZoom = true;
+            controls.enablePan = true;
             controls.minDistance = 100;
             controls.maxDistance = 3000;
-            controls.target.set(400, 250, 0);  // Centraliza a peça na tela
+            controls.target.set(400, 250, 0);
 
-            const light = new THREE.AmbientLight(0x404040); // luz suave ambiente
+            const light = new THREE.AmbientLight(0x404040);
             scene.add(light);
 
             const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
             directionalLight.position.set(5, 5, 5).normalize();
             scene.add(directionalLight);
 
-            camera.position.set(400, 250, 1500);  // Afastar mais a câmera
+            camera.position.set(400, 250, 1500);
             animate();
         }
 
@@ -60,26 +60,21 @@
         }
 
         function loadModel(json) {
-            const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(json.vertices, 3));
+            const points = [];
+            for (let i = 0; i < json.vertices.length; i += 3) {
+                points.push(new THREE.Vector3(json.vertices[i], json.vertices[i + 1], json.vertices[i + 2]));
+            }
+            points.push(points[0]); // Fecha a polilinha
 
-            const material = new THREE.MeshBasicMaterial({
-                map: loadTexture(json.texture) || new THREE.Color(0xff0000), 
-                side: THREE.DoubleSide  // Garante que ambos os lados do plano sejam visíveis
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+            const material = new THREE.LineBasicMaterial({
+                color: 0xff0000, // Cor visível
+                linewidth: 5  // Espessura da linha
             });
 
-            const mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-        }
-
-        function loadTexture(textureName) {
-            if (!textureName) return null;
-            const loader = new THREE.TextureLoader();
-            return loader.load(`./${textureName}`,
-                undefined,
-                undefined,
-                () => logError(`Erro ao carregar a textura: ${textureName}`)
-            );
+            const line = new THREE.Line(geometry, material);
+            scene.add(line);
         }
 
         function logError(message) {
