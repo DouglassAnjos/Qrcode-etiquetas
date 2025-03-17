@@ -20,7 +20,7 @@
         <button onclick="resetCamera()">Redefinir Câmera</button>
     </div>
     <div id="log">Log de erros aparecerá aqui...</div>
-    <div id="version">Versão 1.0.6</div>
+    <div id="version">Versão 1.0.7</div>
     <script>
         let scene, camera, renderer, controls;
 
@@ -60,17 +60,15 @@
         }
 
         function loadModel(json) {
+            const cleanJson = JSON.parse(JSON.stringify(json).replace(/\/\*.*?\*\//g, "").replace(/\/\/.*$/gm, ""));
+
             const geometry = new THREE.BufferGeometry();
-
-            // Definindo os vértices
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(json.vertices, 3));
-
-            // Definindo as faces (índices)
-            geometry.setIndex(json.faces);
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(cleanJson.vertices, 3));
+            geometry.setIndex(cleanJson.faces);
             geometry.computeVertexNormals();
 
-            const material = new THREE.MeshBasicMaterial({
-                map: loadTexture(json.texture) || new THREE.Color(0xff0000),
+            const material = new THREE.MeshStandardMaterial({
+                map: loadTexture(cleanJson.texture) || new THREE.Color(0xff0000),
                 side: THREE.DoubleSide
             });
 
