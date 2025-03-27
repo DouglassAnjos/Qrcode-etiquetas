@@ -1,280 +1,939 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador 3D - Intprocess</title>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
-        canvas { display: block; }
-        #controls { padding: 10px; background-color: #f0f0f0; display: flex; gap: 10px; }
-        #log { height: 100px; background: #eaeaea; overflow-y: auto; padding: 10px; }
-        #version { text-align: center; padding: 5px; background-color: #d3d3d3; }
-    </style>
-</head>
-<body>
-    <div id="controls">
-        <input type="file" id="fileInput" accept=".json">
-        <button class="button" onclick="clearScene()">Limpar Cena</button>
-        <button class="button" onclick="toggleWireframe()">Alternar Wireframe</button>
-        <div>Versão 1.2.0</div>
-    </div>
-    <div id="log"></div>
-    <div id="version">Versão 1.1.1</div>
-    <div id="container"></div>
-    <script>
-        let scene, camera, renderer, controls;
-        let loadedMaterials = new Map();
-        let loadedObjects = new Map();
-        let wireframeMode = false;
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        function init() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xf0f0f0);
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="64x64"
+            href="/public/favicon64x64.png"
+        />
+        <title>Int Process - Gestão para marcenarias.</title>
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-            camera.position.set(500, 500, 500);
+        <!-- Bootstrap 5 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!-- AOS CSS -->
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        
+        <!-- Swiper CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+        
+        <!-- Font Awesome 6 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <!-- Modal de Seleção de Planos -->
+        <div class="modal-planos" id="modalPlanos">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <h3 class="modal-title">Qual plano você tem interesse?</h3>
+                <div class="plano-option" data-plano="start" onclick="selectPlan('start')">
+                    <h4>Plano Start</h4>
+                    <p>Ideal para começar sua automação</p>
+                </div>
+                <div class="plano-option" data-plano="standard" onclick="selectPlan('standard')">
+                    <h4>Plano Standard</h4>
+                    <p>Para marcenarias em crescimento</p>
+                </div>
+                <div class="plano-option" data-plano="plus" onclick="selectPlan('plus')">
+                    <h4>Plano Plus</h4>
+                    <p>Solução completa para sua marcenaria</p>
+                </div>
+            </div>
+        </div>
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            document.getElementById('container').appendChild(renderer.domElement);
+        <!-- Botão WhatsApp -->
+        <div class="whatsapp-button">
+            <a href="https://wa.me/553799110157" class="btn-whatsapp" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+        </div>
 
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            
-            setupLighting();
-            setupEventListeners();
-            animate();
-        }
+        <header class="header">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="container">
+                    <a class="navbar-brand" href="#">
+                        <img src="public/logo.png" alt="IntProcess Logo">
+                    </a>
+                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#home">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#sobre">Sobre</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#funcionalidades">Funcionalidades</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#planos">Planos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#contato">Contato</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
 
-        function setupLighting() {
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
+        <main>
+            <section id="home" class="hero">
+                <div class="hero-content">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6" data-aos="fade-right">
+                                <h1>Gestão Inteligente para sua Marcenaria</h1>
+                                <p>Otimize seus processos, aumente sua produtividade e reduza custos com nossa solução completa de gestão.</p>
+                                <div class="hero-buttons">
+                                    <a href="#planos" class="btn btn-primary">Ver Planos</a>
+                                    <a href="#contato" class="btn btn-outline-primary">Falar com Consultor</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="public/hero-image.png" alt="Marcenaria" class="img-fluid">
+                </div>
+            </section>
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(500, 1000, 500);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
-        }
+            <section id="sobre" class="sobre">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Sobre Nós</h2>
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <p>A IntProcess é uma empresa especializada no desenvolvimento de soluções em software e automação específicas para o segmento de móveis. Nossa tecnologia permite a criação de uma ferramenta inovadora e dinâmica, onde temos o compromisso em oferecer as melhores soluções para atender às necessidades de nossos parceiros.</p>
+                            <p>Nossa equipe é formada por profissionais altamente capacitados, que trabalham com dedicação para disponibilizar soluções eficientes e inovadoras que oferecem ferramentas modernas para gestão, aumento de produtividade e redução de custos de seu negócio.</p>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/about-image.png" alt="Sobre a IntProcess" class="img-fluid">
+                        </div>
+                    </div>
 
-        function setupEventListeners() {
-            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
-            window.addEventListener('resize', onWindowResize);
-        }
+                    <!-- Missão, Visão e Valores -->
+                    <div class="row mt-5">
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-bullseye mb-3"></i>
+                                    <h3>Missão</h3>
+                                    <p>Oferecer soluções tecnológicas que transformem a gestão de marcenarias e indústrias moveleiras, otimizando processos, minimizando desperdícios e garantindo a eficiência produtiva com transparência e controle em todas as etapas.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-eye mb-3"></i>
+                                    <h3>Visão</h3>
+                                    <p>Ser a plataforma de gestão referência para marcenarias e indústrias moveleiras em todo o Brasil, reconhecida pela inovação, eficiência e contribuição para a sustentabilidade no setor.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-star mb-3"></i>
+                                    <h3>Valores</h3>
+                                    <ul class="list-unstyled text-start">
+                                        <li><i class="fas fa-check text-success"></i> Transparência</li>
+                                        <li><i class="fas fa-check text-success"></i> Inovação</li>
+                                        <li><i class="fas fa-check text-success"></i> Eficiência</li>
+                                        <li><i class="fas fa-check text-success"></i> Sustentabilidade</li>
+                                        <li><i class="fas fa-check text-success"></i> Confiança</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        async function loadMaterial(materialData) {
-            if (loadedMaterials.has(materialData.id)) {
-                return loadedMaterials.get(materialData.id);
-            }
+            <section id="funcionalidades" class="funcionalidades">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Funcionalidades do Sistema</h2>
+                    <div class="row">
+                        <!-- Cadastros -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="funcionalidade-card" onclick="scrollToSection('cadastros')">
+                                <i class="fas fa-address-card"></i>
+                                <h3>Cadastros</h3>
+                                <p>Cadastre de forma rápida e prática todos os colaboradores, clientes, fornecedores, materiais e produtos em um só lugar.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Cadastro centralizado</span>
+                                    <span><i class="fas fa-check"></i> Gestão simplificada</span>
+                                    <span><i class="fas fa-check"></i> Dados organizados</span>
+                                </div>
+                            </div>
+                        </div>
 
-            const material = new THREE.MeshPhongMaterial({
-                color: 0xcccccc,
-                side: materialData.properties.side === 'double' ? THREE.DoubleSide : THREE.FrontSide
-            });
+                        <!-- Orçamentos -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="funcionalidade-card" onclick="scrollToSection('orcamentos')">
+                                <i class="fas fa-calculator"></i>
+                                <h3>Orçamentos</h3>
+                                <p>Envie propostas via WhatsApp, controle validades e acesse histórico completo de orçamentos.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Envio via WhatsApp</span>
+                                    <span><i class="fas fa-check"></i> Controle de validade</span>
+                                    <span><i class="fas fa-check"></i> Histórico completo</span>
+                                </div>
+                            </div>
+                        </div>
 
-            if (materialData.texture) {
-                try {
-                    const texture = await new Promise((resolve, reject) => {
-                        new THREE.TextureLoader().load(
-                            materialData.texture,
-                            resolve,
-                            undefined,
-                            reject
-                        );
-                    });
-                    material.map = texture;
-                    logMessage(`Textura carregada: ${materialData.texture}`);
-                } catch (error) {
-                    logError(`Erro ao carregar textura ${materialData.texture}: ${error.message}`);
-                }
-            }
+                        <!-- Vendas -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="funcionalidade-card" onclick="scrollToSection('vendas')">
+                                <i class="fas fa-shopping-cart"></i>
+                                <h3>Vendas</h3>
+                                <p>Simplifique e automatize seu processo de vendas, gerando contratos automáticos e mantendo controle total.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Contratos automáticos</span>
+                                    <span><i class="fas fa-check"></i> Gestão de vendas</span>
+                                    <span><i class="fas fa-check"></i> Controle financeiro</span>
+                                </div>
+                            </div>
+                        </div>
 
-            material.roughness = materialData.properties.roughness || 0.5;
-            material.metalness = materialData.properties.metalness || 0.0;
-            
-            loadedMaterials.set(materialData.id, material);
-            return material;
-        }
+                        <!-- Financeiro -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="funcionalidade-card" onclick="scrollToSection('financeiro')">
+                                <i class="fas fa-dollar-sign"></i>
+                                <h3>Financeiro</h3>
+                                <p>Gestão completa das finanças com controle de custos, fluxo de caixa e relatórios detalhados.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Controle de custos</span>
+                                    <span><i class="fas fa-check"></i> Fluxo de caixa</span>
+                                    <span><i class="fas fa-check"></i> Relatórios gerenciais</span>
+                                </div>
+                            </div>
+                        </div>
 
-        async function loadObject(objectData, materials) {
-            const geometry = new THREE.BufferGeometry();
-            
-            // Vertices
-            const vertices = new Float32Array(objectData.vertices);
-            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-            
-            // Faces
-            geometry.setIndex(objectData.faces);
-            
-            // UVs
-            if (objectData.uvs) {
-                const uvs = new Float32Array(objectData.uvs);
-                geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-            }
+                        <!-- Integração Software 3D -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="funcionalidade-card" onclick="scrollToSection('integracao-3d')">
+                                <i class="fas fa-cube"></i>
+                                <h3>Integração Software 3D</h3>
+                                <p>Transforme modelos 3D em dados produtivos, automatizando o processo de fabricação.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Integração Intmob para SketchUp</span>
+                                    <span><i class="fas fa-check"></i> Conversão automática</span>
+                                    <span><i class="fas fa-check"></i> Dados produtivos</span>
+                                </div>
+                            </div>
+                        </div>
 
-            // Material
-            const material = await loadMaterial(materials.find(m => m.id === objectData.material));
-            
-            // Mesh
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(...objectData.position);
-            mesh.rotation.set(...objectData.rotation);
-            mesh.scale.set(...objectData.scale);
-            
-            // Cutting data visualization
-            if (objectData.cutting_data) {
-                addCuttingDataVisualization(mesh, objectData.cutting_data);
-            }
+                        <!-- Plano de Corte -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="funcionalidade-card" onclick="scrollToSection('plano-corte')">
+                                <i class="fas fa-cut"></i>
+                                <h3>Plano de Corte</h3>
+                                <p>Otimize o aproveitamento de materiais com planos de corte inteligentes e integrados.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Otimização de material</span>
+                                    <span><i class="fas fa-check"></i> Gestão de sobras</span>
+                                    <span><i class="fas fa-check"></i> Integração CNC</span>
+                                </div>
+                            </div>
+                        </div>
 
-            loadedObjects.set(objectData.name, mesh);
-            return mesh;
-        }
+                        <!-- Engenharia de Usinagens -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="funcionalidade-card" onclick="scrollToSection('engenharia-usinagens')">
+                                <i class="fas fa-cogs"></i>
+                                <h3>Engenharia de Usinagens</h3>
+                                <p>Configure estratégias de usinagem com precisão e flexibilidade para cada projeto.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Configuração precisa</span>
+                                    <span><i class="fas fa-check"></i> Padrões paramétricos</span>
+                                    <span><i class="fas fa-check"></i> Controle total</span>
+                                </div>
+                            </div>
+                        </div>
 
-        function addCuttingDataVisualization(parentMesh, cuttingData) {
-            if (cuttingData.outline_2d) {
-                const outlineGeometry = new THREE.BufferGeometry();
-                const outlinePoints = cuttingData.outline_2d.flat();
-                outlineGeometry.setAttribute('position', 
-                    new THREE.Float32BufferAttribute(outlinePoints.concat(outlinePoints.slice(0, 2)), 3));
-                
-                const outlineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-                const outline = new THREE.Line(outlineGeometry, outlineMaterial);
-                parentMesh.add(outline);
-            }
+                        <!-- Exportação DXF -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="funcionalidade-card" onclick="scrollToSection('exportacao-dxf')">
+                                <i class="fas fa-file-export"></i>
+                                <h3>Exportação DXF e G-CODE</h3>
+                                <p>Exporte projetos em diversos formatos compatíveis com máquinas CNC.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Múltiplos formatos</span>
+                                    <span><i class="fas fa-check"></i> Integração CNC</span>
+                                    <span><i class="fas fa-check"></i> Automação avançada</span>
+                                </div>
+                            </div>
+                        </div>
 
-            if (cuttingData.internal_cuts) {
-                cuttingData.internal_cuts.forEach(cut => {
-                    if (cut.type === 'circle') {
-                        const curve = new THREE.EllipseCurve(
-                            cut.center[0], cut.center[1],
-                            cut.radius, cut.radius
-                        );
-                        const points = curve.getPoints(50);
-                        const circleGeometry = new THREE.BufferGeometry().setFromPoints(points);
-                        const circleMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-                        const circle = new THREE.Line(circleGeometry, circleMaterial);
-                        parentMesh.add(circle);
-                    }
-                });
-            }
-        }
+                        <!-- Controle Produção -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+                            <div class="funcionalidade-card" onclick="scrollToSection('controle-producao')">
+                                <i class="fas fa-industry"></i>
+                                <h3>Controle de Produção</h3>
+                                <p>Acompanhe em tempo real todo o processo produtivo com rastreabilidade total.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Monitoramento real-time</span>
+                                    <span><i class="fas fa-check"></i> Gestão de processos</span>
+                                    <span><i class="fas fa-check"></i> Controle de qualidade</span>
+                                </div>
+                            </div>
+                        </div>
 
-        async function loadModel(jsonData) {
-            try {
-                clearScene();
-                
-                // Carregar materiais
-                for (const materialData of jsonData.materials) {
-                    await loadMaterial(materialData);
-                }
-                
-                // Carregar objetos
-                for (const objectData of jsonData.objects) {
-                    const mesh = await loadObject(objectData, jsonData.materials);
-                    scene.add(mesh);
-                }
-                
-                // Processar grupos
-                if (jsonData.groups) {
-                    for (const groupData of jsonData.groups) {
-                        const group = new THREE.Group();
-                        groupData.objects.forEach(objectName => {
-                            const object = loadedObjects.get(objectName);
-                            if (object) {
-                                group.add(object.clone());
-                            }
-                        });
-                        group.position.set(...groupData.position);
-                        group.rotation.set(...groupData.rotation);
-                        scene.add(group);
-                    }
-                }
+                        <!-- Gerenciamento de Compras -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+                            <div class="funcionalidade-card" onclick="scrollToSection('gerenciamento-compras')">
+                                <i class="fas fa-shopping-basket"></i>
+                                <h3>Gerenciamento de Compras</h3>
+                                <p>Integre sua modelagem 3D a nossa plataforma e tenha a lista de materiais completa para compras através do nosso plugin Intmob para SketchUp, ou crie seus produtos em cadastros e personalize sua lista ao seu gosto.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Cotação automática</span>
+                                    <span><i class="fas fa-check"></i> Controle de pedidos</span>
+                                    <span><i class="fas fa-check"></i> Gestão de fornecedores</span>
+                                </div>
+                            </div>
+                        </div>
 
-                // Ajustar câmera
-                const box = new THREE.Box3().setFromObject(scene);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-                
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const fov = camera.fov * (Math.PI / 180);
-                const cameraDistance = Math.abs(maxDim / Math.sin(fov / 2) / 2);
-                
-                camera.position.copy(center);
-                camera.position.x += cameraDistance;
-                camera.position.y += cameraDistance;
-                camera.position.z += cameraDistance;
-                camera.lookAt(center);
-                
-                controls.target.copy(center);
-                controls.update();
+                        <!-- Controle de Estoque -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+                            <div class="funcionalidade-card" onclick="scrollToSection('controle-estoque')">
+                                <i class="fas fa-boxes"></i>
+                                <h3>Controle de Estoque</h3>
+                                <p>Gerencie seu estoque em tempo real com controle total de materiais.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> Gestão em tempo real</span>
+                                    <span><i class="fas fa-check"></i> Controle de sobras</span>
+                                    <span><i class="fas fa-check"></i> Alertas automáticos</span>
+                                </div>
+                            </div>
+                        </div>
 
-                logMessage('Modelo carregado com sucesso!');
-            } catch (error) {
-                logError(`Erro ao carregar modelo: ${error.message}`);
-            }
-        }
+                        <!-- Emissão de Etiquetas -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="500">
+                            <div class="funcionalidade-card" onclick="scrollToSection('emissao-etiquetas')">
+                                <i class="fas fa-tags"></i>
+                                <h3>Emissão de Etiquetas</h3>
+                                <p>Imprima etiquetas com QR Code para rastreamento completo das peças.</p>
+                                <div class="beneficios">
+                                    <span><i class="fas fa-check"></i> QR Code integrado</span>
+                                    <span><i class="fas fa-check"></i> Impressão móvel</span>
+                                    <span><i class="fas fa-check"></i> Rastreabilidade total</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+                <!-- Principais Benefícios - Carrossel -->
+                <section id="principais-beneficios" class="principais-beneficios">
+                    <div class="container">
+                        <h2 class="text-center mb-5" data-aos="fade-up">Principais Benefícios</h2>
+                        
+                        <div class="beneficios-swiper swiper" data-aos="fade-up" data-aos-delay="200">
+                            <div class="swiper-wrapper">
+                                <!-- Benefício 1 -->
+                                <div class="swiper-slide">
+                                    <div class="beneficio-card">
+                                        <i class="fas fa-chart-line"></i>
+                                        <h4>Monitoramento em Tempo Real</h4>
+                                        <p>Acompanhe todas as etapas da produção com atualizações instantâneas e dados precisos.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Benefício 2 -->
+                                <div class="swiper-slide">
+                                    <div class="beneficio-card">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <h4>Mobilidade Total</h4>
+                                        <p>Acesse o sistema de qualquer lugar através de dispositivos móveis com total segurança.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Benefício 3 -->
+                                <div class="swiper-slide">
+                                    <div class="beneficio-card">
+                                        <i class="fas fa-robot"></i>
+                                        <h4>Automação Completa</h4>
+                                        <p>Processos automatizados que reduzem erros e aumentam a eficiência operacional.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Benefício 4 -->
+                                <div class="swiper-slide">
+                                    <div class="beneficio-card">
+                                        <i class="fas fa-puzzle-piece"></i>
+                                        <h4>Planos de Corte Interativos</h4>
+                                        <p>Otimização inteligente de materiais com visualização em tempo real.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Benefício 5 -->
+                                <div class="swiper-slide">
+                                    <div class="beneficio-card">
+                                        <i class="fas fa-chart-pie"></i>
+                                        <h4>Transparência</h4>
+                                        <p>Visibilidade completa de todos os processos e indicadores de desempenho.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Benefício 6 -->
+                                <div class="swiper-slide">
+                                    <div class="beneficio-card">
+                                        <i class="fas fa-history"></i>
+                                        <h4>Rastreabilidade</h4>
+                                        <p>Histórico completo de todas as operações e mudanças no sistema.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Benefício 7 -->
+                                <div class="swiper-slide">
+                                    <div class="beneficio-card">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <h4>Indicadores de Performance</h4>
+                                        <p>Métricas detalhadas para análise e tomada de decisões estratégicas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Paginação do Swiper -->
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+                </section>
+            </section>
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const jsonData = JSON.parse(e.target.result);
-                    loadModel(jsonData);
-                } catch (error) {
-                    logError(`Erro ao carregar o arquivo JSON: ${error.message}`);
-                }
-            };
-            reader.readAsText(file);
-        }
+            <!-- Funcionalidade Cadastros -->
+            <section id="cadastros" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 content-left" data-aos="fade-right" data-aos-duration="800">
+                            <h2>Cadastros</h2>
+                            <p>Cadastre de forma rápida e prática todos os colaboradores, clientes, fornecedores, materiais e produtos em um só lugar.</p>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
+                            <img src="public/cadastros.png" alt="Cadastros" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        function clearScene() {
-            while(scene.children.length > 0) { 
-                scene.remove(scene.children[0]); 
-            }
-            loadedMaterials.clear();
-            loadedObjects.clear();
-            setupLighting();
-            logMessage('Cena limpa');
-        }
+            <!-- Funcionalidade Orçamentos -->
+            <section id="orcamentos" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6" data-aos="fade-right" data-aos-duration="800">
+                            <img src="public/orcamentos.png" alt="Orçamentos" class="img-fluid">
+                        </div>
+                        <div class="col-lg-6 content-right" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
+                            <h2>Orçamentos</h2>
+                            <p>Envie propostas via WhatsApp, controle validades e acesse histórico completo de orçamentos.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        function toggleWireframe() {
-            wireframeMode = !wireframeMode;
-            loadedMaterials.forEach(material => {
-                material.wireframe = wireframeMode;
-            });
-            logMessage(`Modo wireframe: ${wireframeMode ? 'Ativado' : 'Desativado'}`);
-        }
+            <section id="vendas" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Vendas</h2>
+                            <div class="texto-bloco">
+                                <p>Simplifique e automatize seu processo de vendas com a Introcess. Gere contratos de forma automática e instantânea com apenas um toque, garantindo que cada transação seja rápida, segura e eficiente. Mantenha o controle total sobre sua produção, integrando o acompanhamento direto com o PCP, permitindo uma gestão precisa do ciclo produtivo, desde a venda até a entrega.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <p>Com a funcionalidade de Vendas, você pode concluir transações em minutos, tendo o contrato de serviços emitido de forma automática. Cada venda realizada é rastreada, possibilitando identificar quem realizou a venda, garantindo maior transparência e controle. A plataforma permite que você personalize suas formas de negócio nas configurações, garantindo que o setor comercial possa realizar vendas com segurança e dentro dos parâmetros estabelecidos pelo gestor.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <p>A Introcess também assegura que o processo de vendas esteja alinhado com a saúde financeira da empresa, oferecendo controle total sobre cada venda e assegurando que os limites financeiros sejam respeitados, promovendo uma gestão eficiente e organizada do fluxo de caixa.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/vendas.png" alt="Gestão de Vendas" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        function logMessage(message) {
-            const logDiv = document.getElementById('log');
-            logDiv.innerHTML += `<div>${message}</div>`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
+            <section id="financeiro" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Financeiro</h2>
+                            <div class="texto-bloco">
+                                <p>O módulo Financeiro da Introcess oferece uma gestão completa e automatizada das finanças da sua empresa. Com ele, você tem controle total sobre contas a pagar, contas a receber, fluxo de caixa e muito mais. O sistema permite que você acompanhe em tempo real todas as movimentações financeiras, garantindo uma visão clara e precisa da saúde financeira do seu negócio.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Controle de Custos</h4>
+                                <p>Gerencie todos os custos da sua empresa de forma eficiente, desde materiais até mão de obra. O sistema calcula automaticamente os custos de cada projeto, permitindo uma precificação mais precisa e competitiva. Você pode acompanhar os gastos por centro de custo, analisar a rentabilidade por projeto e identificar oportunidades de redução de despesas.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Fluxo de Caixa</h4>
+                                <p>Tenha uma visão clara das entradas e saídas de recursos, com projeções futuras que auxiliam na tomada de decisões. O sistema permite o acompanhamento detalhado do fluxo de caixa, com relatórios personalizados e alertas automáticos para vencimentos próximos.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Integração Completa</h4>
+                                <p>O módulo financeiro está totalmente integrado com as demais funcionalidades do sistema, como vendas, compras e produção. Isso significa que todas as transações são registradas automaticamente, eliminando a necessidade de lançamentos manuais e reduzindo erros.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Relatórios e Análises</h4>
+                                <p>Acesse relatórios detalhados sobre a performance financeira da sua empresa, incluindo demonstrativos de resultado, análises de lucratividade e indicadores de desempenho. Essas informações são fundamentais para o planejamento estratégico e a tomada de decisões baseada em dados.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/financeiro.png" alt="Gestão Financeira" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        function logError(message) {
-            const logDiv = document.getElementById('log');
-            logDiv.innerHTML += `<div style="color: red">${message}</div>`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
+            <section id="integracao-3d" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Integração com Software 3D</h2>
+                            <div class="texto-bloco">
+                                <p>A funcionalidade de Integração com Software 3D da Introcess foi projetada para transformar modelos 3D em dados produtivos, automatizando e otimizando o processo de fabricação. Com integração direta através do nosso plugin Intmob para SketchUp, você pode importar e trabalhar com seus projetos diretamente na plataforma, assegurando que cada detalhe do design seja fielmente replicado na produção.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Conversão de Modelos em Dados Produtivos</h4>
+                                <p>Ao integrar o software 3D com a Introcess, os modelos criados são convertidos automaticamente em listas de materiais, planos de corte e engenharia de usinagens, prontos para serem enviados às máquinas CNC. Essa automação elimina a necessidade de cálculos manuais ou conversões demoradas, agilizando significativamente o processo de planejamento e execução.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Automação Completa</h4>
+                                <p>Durante o desenvolvimento de móveis ou peças no software 3D, todas as informações essenciais para a produção, como cortes, furos e fresagens, são configuradas diretamente no modelo. Esses dados são automaticamente exportados para formatos como DXF, G-CODE e outros, dependendo do plano contratado, facilitando a comunicação direta entre o projeto e as máquinas CNC.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Alinhamento Total entre Orçamento e Produção</h4>
+                                <p>A integração permite que a produção esteja completamente alinhada ao design e aos orçamentos. Desde a concepção inicial até a fabricação, cada etapa é gerida de forma eficiente, proporcionando precisão, agilidade e automação completa em todos os processos.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/integracao-3d.png" alt="Integração com Software 3D" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+            <section id="engenharia-usinagens" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Criação de Engenharia de Usinagens</h2>
+                            <div class="texto-bloco">
+                                <p>A funcionalidade de Criação de Engenharia de Usinagens da Introcess foi desenvolvida para otimizar e automatizar a produção de móveis e peças personalizadas, proporcionando precisão e eficiência em todas as etapas do processo produtivo. Com essa ferramenta avançada, você pode configurar todas as estratégias de usinagem necessárias, como cortes, furos, fresagens e outros acabamentos, ajustando os parâmetros de usinagem de acordo com o modelo construtivo de cada projeto.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <p>Essa funcionalidade está totalmente integrada ao nosso plugin Intmob para SketchUp, permitindo que as usinagens sejam configuradas diretamente a partir dos modelos 3D criados. Isso garante que todos os detalhes construtivos sejam replicados fielmente na produção, assegurando que o projeto final corresponda exatamente ao design original.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Personalização e Flexibilidade</h4>
+                                <p>Através do construtor de usinagens da Introcess, você pode personalizar os processos de usinagem, criando padrões paramétricos de usinagem que podem ser facilmente reutilizados em novos projetos. Essa abordagem oferece agilidade e praticidade, permitindo que novas usinagens sejam configuradas rapidamente, economizando tempo e esforço na fase de planejamento.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Mobilidade</h4>
+                                <p>Além disso, essa flexibilidade permite que o processo de usinagem seja configurado até mesmo por dispositivos móveis, como celulares e tablets, oferecendo maior praticidade e controle para que você possa ajustar e gerenciar as usinagens remotamente.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/engenharia-usinagens.png" alt="Engenharia de Usinagens" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
+            <section id="exportacao-dxf" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Exportação DXF, G-CODE e Outros</h2>
+                            <div class="texto-bloco">
+                                <p>A funcionalidade de Exportação DXF, G-CODE e Outros da Introcess facilita a comunicação entre os projetos criados e as máquinas CNC, automatizando o envio de dados e garantindo que as usinagens sejam realizadas com precisão e eficiência. Essa integração automatizada reduz a necessidade de intervenções manuais, resultando em maior agilidade e precisão na execução dos projetos.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Formatos de Exportação</h4>
+                                <p>A plataforma permite a exportação de projetos e dados de usinagem em diversos formatos, como DXF, G-CODE, e outros formatos compatíveis com máquinas CNC e equipamentos automatizados. Isso garante que as instruções sejam enviadas diretamente para as máquinas, eliminando etapas manuais e reduzindo o tempo de produção, além de minimizar erros.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Automação e Eficiência</h4>
+                                <p>Com essa funcionalidade, a comunicação entre os projetos e as máquinas CNC é totalmente otimizada, resultando em uma produção mais rápida, precisa e livre de falhas operacionais. O processo produtivo se torna muito mais eficiente, permitindo uma automação avançada que melhora significativamente a performance de toda a operação.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Flexibilidade de Compatibilidade</h4>
+                                <p>A capacidade de exportar para vários formatos permite que sua marcenaria ou indústria trabalhe com uma ampla gama de equipamentos, garantindo que as especificações do projeto sejam executadas com precisão em diferentes contextos produtivos. Caso sua empresa utilize equipamentos que ainda não tenham integração direta com a Introcess, nossa equipe está preparada para desenvolver soluções personalizadas para atender às suas necessidades específicas.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/exportacao-dxf.png" alt="Exportação DXF e G-CODE" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        init();
-    </script>
-</body>
+            <section id="emissao-etiquetas" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Emissão de Etiquetas</h2>
+                            <div class="texto-bloco">
+                                <p>A funcionalidade de Emissão de Etiquetas da Introcess permite que você imprima etiquetas com QR Code diretamente do seu celular ou tablet, garantindo um rastreamento completo e preciso de todas as peças durante o processo produtivo. Essa solução móvel oferece praticidade e agilidade, permitindo que você gerencie a identificação das peças de qualquer lugar da fábrica.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Rastreabilidade Total</h4>
+                                <p>Cada etiqueta gerada contém um QR Code único que, quando escaneado, fornece acesso instantâneo a todas as informações relevantes da peça, incluindo dimensões, acabamentos, sequência de produção e instruções específicas de fabricação. Isso garante que cada item possa ser facilmente identificado e rastreado em qualquer etapa do processo produtivo.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Integração com Produção</h4>
+                                <p>O sistema de etiquetas está completamente integrado com o módulo de produção, permitindo um controle preciso do fluxo de materiais e peças. As etiquetas são geradas automaticamente a partir dos planos de corte e ordens de produção, garantindo que todas as informações estejam sempre sincronizadas e atualizadas.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Mobilidade e Praticidade</h4>
+                                <p>Com a possibilidade de imprimir etiquetas diretamente de dispositivos móveis, sua equipe ganha agilidade e eficiência. Não é necessário retornar ao escritório ou a um ponto fixo para gerar novas etiquetas, otimizando o tempo e o fluxo de trabalho na produção.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/emissao-etiquetas.jpg" alt="Emissão de Etiquetas" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="controle-producao" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Controle de Produção</h2>
+                            <div class="texto-bloco">
+                                <p>A Introcess oferece uma integração completa entre sua modelagem 3D e nossa plataforma, proporcionando um controle total sobre o processo produtivo. Com nossa funcionalidade de Produção, você pode conectar diretamente o plano de corte às máquinas automáticas, otimizando o processo e garantindo eficiência. Para aqueles que utilizam máquinas de corte manuais, oferecemos suporte completo, desde o plano de corte até a emissão de etiquetas, garantindo o rastreamento preciso de todas as informações relacionadas a cada peça a ser produzida. Tudo isso pode ser feito de forma prática, diretamente pelo seu celular ou tablet, sem complicações.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <p>Nosso sistema também integra-se totalmente ao PCP (Planejamento e Controle da Produção), permitindo um acompanhamento detalhado e em tempo real de todas as etapas do ciclo produtivo. Seja sua marcenaria grande ou pequena, há sempre um fluxo preciso a ser respeitado para que cada peça de mobiliário seja produzida com eficiência e qualidade. Desde os insumos e materiais necessários para a fabricação, até a produção, embalagem e montagem final, nossa plataforma oferece a gestão completa e automatizada de cada etapa.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <p>A Introcess garante que uma boa gestão dos processos na marcenaria evite problemas como desperdício de materiais e mão de obra, proporcionando benefícios claros para sua empresa. Controle sua produção de onde estiver, com rastreabilidade total em todas as etapas. A plataforma permite identificar possíveis falhas no processo, seja por mão de obra, equipamentos ou gestão, oferecendo visibilidade em tempo real sobre todo o ciclo produtivo.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <p>Outro grande diferencial da nossa plataforma é o controle de avanço. Isso significa que seus clientes e parceiros podem acompanhar, em tempo real, o desenvolvimento de cada fase do projeto, oferecendo mais transparência e confiança ao longo do processo.</p>
+                                <p>Além disso, nossa solução permite otimizar sua produção de forma segura, com confiabilidade aprimorada em todas as etapas. Você terá a segurança de que cada parte do processo está sendo monitorada e controlada, garantindo a eficiência máxima e a minimização de custos adicionais. Tudo isso contribui para uma produção mais ágil, organizada e econômica, refletindo diretamente na qualidade do serviço final entregue ao cliente.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/controle-producao.png" alt="Controle de Produção" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="gerenciamento-compras" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Gerenciamento de Compras</h2>
+                            <div class="texto-bloco">
+                                <p>A funcionalidade de Gerenciamento de Compras da Introcess permite que você integre suas listas de materiais diretamente com o sistema, facilitando o processo de compras e gerenciamento de fornecedores. Com essa ferramenta, você pode realizar cotações, controlar pedidos e gerenciar fornecedores de forma eficiente.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Cotação Automática</h4>
+                                <p>A plataforma permite que você realize cotações de forma automática, com base nos dados dos materiais e produtos disponíveis. Isso economiza tempo e recursos, além de garantir que as informações estejam sempre atualizadas.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Controle de Pedidos</h4>
+                                <p>Você pode controlar todos os pedidos de compras, desde a emissão até o recebimento dos materiais. Isso garante que todos os itens sejam entregues no prazo e de acordo com as especificações do projeto.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Gestão de Fornecedores</h4>
+                                <p>A funcionalidade de Gerenciamento de Compras também permite que você gerencie seus fornecedores, mantendo um registro completo de todas as transações e informações relevantes. Isso facilita a comunicação e o relacionamento com os fornecedores, garantindo um processo de compra mais eficiente.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/gerenciamento-compras.png" alt="Gerenciamento de Compras" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="controle-estoque" class="funcionalidade-detalhe">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Controle de Estoque</h2>
+                            <div class="texto-bloco">
+                                <p>A funcionalidade de Controle de Estoque da Introcess permite que você tenha um controle total sobre o estoque, visualizando o status de cada material em tempo real. Com essa ferramenta, você pode gerenciar seu estoque de forma eficiente, evitando faltas e excessos de materiais.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Gestão em Tempo Real</h4>
+                                <p>Você pode acessar o status do estoque a qualquer momento, garantindo que todas as informações estejam sempre atualizadas. Isso permite que você tome decisões informadas sobre o gerenciamento de estoque.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Controle de Sobras</h4>
+                                <p>A funcionalidade de Controle de Estoque também permite que você gerencie as sobras de materiais, registrando e controlando essas quantidades. Isso ajuda a evitar desperdícios e a otimizar o uso dos recursos disponíveis.</p>
+                            </div>
+                            <div class="texto-bloco">
+                                <h4>Alertas Automáticos</h4>
+                                <p>A plataforma pode gerar alertas automáticos quando o estoque de um material está baixo ou quando é necessário reabastecer o estoque. Isso ajuda a evitar interrupções no processo produtivo e a garantir que todos os itens estejam disponíveis quando necessário.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/controle-estoque.png" alt="Controle de Estoque" class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="planos" class="planos">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Nossos Planos</h2>
+                    
+                    <!-- Diferenciais dos Planos -->
+                    <div class="diferenciais mb-5" data-aos="fade-up">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 text-center">
+                                <h3>Por que escolher a IntProcess?</h3>
+                                <div class="row mt-4">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="diferencial-item">
+                                            <i class="fas fa-rocket"></i>
+                                            <h4>1º Ano Sem Mensalidade</h4>
+                                            <p>Comece a usar sem compromisso</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="diferencial-item">
+                                            <i class="fas fa-clock"></i>
+                                            <h4>Suporte Prioritário</h4>
+                                            <p>Atendimento rápido e eficiente</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="diferencial-item">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            <h4>Treinamento Incluso</h4>
+                                            <p>Aprenda a usar com especialistas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Plano Start -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="card plano-card">
+                                <div class="card-body">
+                                    <div class="plano-header">
+                                        <h3 class="card-title">Plano Start</h3>
+                                        <span class="badge bg-primary">Mais Popular</span>
+                                    </div>
+                                    <div class="preco">
+                                        <span class="valor" data-price="6800">R$ 6.800,00</span>
+                                        <span class="periodo">1º ano sem mensalidade</span>
+                                    </div>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check"></i> Integração Software 3D</li>
+                                        <li><i class="fas fa-check"></i> Plano de corte</li>
+                                        <li><i class="fas fa-check"></i> Assistente produção</li>
+                                        <li><i class="fas fa-check"></i> Emissão de etiquetas</li>
+                                        <li><i class="fas fa-check"></i> 02 licenças plataforma online</li>
+                                        <li><i class="fas fa-check"></i> 01 licença Intmob (Plug-in 3D)</li>
+                                        <li><i class="fas fa-check"></i> Orçamentos básicos</li>
+                                        <li><i class="fas fa-check"></i> Controle de estoque simples</li>
+                                        <li><i class="fas fa-check"></i> Gestão de clientes</li>
+                                        <li><i class="fas fa-check"></i> Relatórios básicos</li>
+                                    </ul>
+                                    <div class="mensalidade">
+                                        <p>A partir do 2º ano: R$ 199/mês</p>
+                                    </div>
+                                    <div class="plano-footer">
+                                        <a href="#contato" class="btn btn-primary w-100">Começar Agora</a>
+                                        <p class="text-center mt-3">Economize até 15% em materiais</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Plano Standard -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="card plano-card featured">
+                                <div class="card-body">
+                                    <div class="plano-header">
+                                        <h3 class="card-title">Plano Standard</h3>
+                                        <span class="badge bg-success">Mais Completo</span>
+                                    </div>
+                                    <div class="preco">
+                                        <span class="valor" data-price="11199">R$ 11.199,00</span>
+                                        <span class="periodo">1º ano sem mensalidade</span>
+                                    </div>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check"></i> Todas as funcionalidades do Start</li>
+                                        <li><i class="fas fa-check"></i> Gerenciamento de compras</li>
+                                        <li><i class="fas fa-check"></i> Controle de estoque avançado</li>
+                                        <li><i class="fas fa-check"></i> Licenças ilimitadas plataforma online</li>
+                                        <li><i class="fas fa-check"></i> 02 licenças Intmob (Plug-in 3D)</li>
+                                        <li><i class="fas fa-check"></i> Orçamentos avançados</li>
+                                        <li><i class="fas fa-check"></i> Gestão financeira completa</li>
+                                        <li><i class="fas fa-check"></i> Relatórios personalizados</li>
+                                        <li><i class="fas fa-check"></i> Suporte prioritário</li>
+                                        <li><i class="fas fa-check"></i> Treinamento personalizado</li>
+                                    </ul>
+                                    <div class="mensalidade">
+                                        <p>A partir do 2º ano: R$ 399/mês</p>
+                                    </div>
+                                    <div class="plano-footer">
+                                        <a href="#contato" class="btn btn-primary w-100">Começar Agora</a>
+                                        <p class="text-center mt-3">Aumente sua produtividade em 30%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Plano Plus -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="card plano-card">
+                                <div class="card-body">
+                                    <div class="plano-header">
+                                        <h3 class="card-title">Plano Plus</h3>
+                                        <span class="badge bg-warning">Mais Avançado</span>
+                                    </div>
+                                    <div class="preco">
+                                        <span class="valor" data-price="14990">R$ 14.990,00</span>
+                                        <span class="periodo">1º ano sem mensalidade</span>
+                                    </div>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check"></i> Todas as funcionalidades do Standard</li>
+                                        <li><i class="fas fa-check"></i> Criação de engenharia de usinagens</li>
+                                        <li><i class="fas fa-check"></i> Exportação DXF, G-CODE e outros</li>
+                                        <li><i class="fas fa-check"></i> Controle produção avançado</li>
+                                        <li><i class="fas fa-check"></i> 05 licenças Intmob (Plug-in 3D)</li>
+                                        <li><i class="fas fa-check"></i> API de integração</li>
+                                        <li><i class="fas fa-check"></i> Personalização completa</li>
+                                        <li><i class="fas fa-check"></i> Suporte VIP 24/7</li>
+                                        <li><i class="fas fa-check"></i> Consultoria especializada</li>
+                                        <li><i class="fas fa-check"></i> Treinamento exclusivo</li>
+                                    </ul>
+                                    <div class="mensalidade">
+                                        <p>A partir do 2º ano: R$ 499/mês</p>
+                                    </div>
+                                    <div class="plano-footer">
+                                        <a href="#contato" class="btn btn-primary w-100">Começar Agora</a>
+                                        <p class="text-center mt-3">Automatize 100% da sua produção</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formas de Pagamento -->
+                    <div class="formas-pagamento mt-5" data-aos="fade-up">
+                        <h3 class="text-center mb-4">Formas de Pagamento Facilitadas</h3>
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 text-center">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="mb-4">Oferecemos condições flexíveis para que você possa começar a transformar sua marcenaria hoje mesmo</p>
+                                        <div class="payment-features mb-4">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-handshake"></i>
+                                                        <h5>Flexibilidade</h5>
+                                                        <p>Condições personalizadas para seu negócio</p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-shield-alt"></i>
+                                                        <h5>Segurança</h5>
+                                                        <p>Pagamento seguro e facilitado</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="#contato" class="btn btn-primary btn-lg">Contrate Agora</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contato" class="contato">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Entre em Contato</h2>
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <form id="contactForm" class="contact-form" data-aos="fade-up">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Nome completo" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" placeholder="E-mail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="tel" class="form-control" placeholder="Telefone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-control" required>
+                                        <option value="">Selecione o plano de interesse</option>
+                                        <option value="start">Plano Start</option>
+                                        <option value="standard">Plano Standard</option>
+                                        <option value="plus">Plano Plus</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" rows="5" placeholder="Mensagem" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Enviar Mensagem</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="public/logo.png" alt="IntProcess Logo" class="footer-logo">
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Contato</h4>
+                        <p><i class="fas fa-envelope"></i> suporte@intprocess.com.br</p>
+                        <p><i class="fas fa-phone"></i> +37 99911-0157</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Redes Sociais</h4>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/intprocess.app.br/" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.youtube.com/channel/UCRsj9WS5TApIrA25JVk8X3g" target="_blank"><i class="fab fa-youtube"></i></a>
+                            <a href="https://wa.me/553799110157" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 IntProcess. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+        <script src="script.js"></script>
+    </body>
 </html>
