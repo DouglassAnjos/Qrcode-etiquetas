@@ -1770,3 +1770,8 @@ h2::after {
         font-size: 1rem;
     }
 }
+
+.about-image {
+    height: 50vh;
+    object-fit: cover;
+}
