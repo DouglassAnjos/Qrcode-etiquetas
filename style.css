@@ -33,11 +33,14 @@ html {
     box-sizing: border-box;
 }
 
-body {
+body, main {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
     background-color: var(--cor-dois);
     color: var(--text-color);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow-x: hidden !important;
     line-height: 1.6;
 }
 
@@ -45,12 +48,12 @@ a {
     color: #000000;
 }
 
-main {
-    width: 100vw;
-}
-
 .container-fluid {
-    margin: 0 3rem;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
 }
 
 /* BTN-FIXED-ZAP */
@@ -650,14 +653,40 @@ main {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.navbar-brand {
+    padding: 15px 0 15px 15px;
+    transition: all 0.3s ease;
+}
+
 .navbar-brand img {
     height: 34px;
+    transition: all 0.3s ease;
+    filter: brightness(1);
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+
+/* Para garantir que o container da navbar também tenha padding adequado */
+.navbar > .container {
+    padding-left: 15px;
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+    .navbar-brand {
+        padding: 10px 0 10px 10px;
+    }
 }
 
 .nav-link {
     color: white !important;
     font-weight: 500;
     transition: color 0.3s ease;
+    padding: 0.5rem 1.2rem !important;
+    margin: 0 0.3rem;
 }
 
 .nav-link:hover {
@@ -666,15 +695,25 @@ main {
 
 /* Hero Section */
 .hero {
-    position: relative;
-    overflow: hidden;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
 }
 
 .hero-content {
     position: relative;
     z-index: 2;
     background: var(--gradient-primary);
-    padding: 120px 0;
+    padding: 120px 2rem;
+}
+
+.hero-content .container {
+    max-width: 1400px;
+    margin: 0 auto !important;
 }
 
 .hero-content h1 {
@@ -694,20 +733,25 @@ main {
 .hero-buttons {
     display: flex;
     gap: 1rem;
+    padding-left: 1rem;
 }
 
 .hero-image {
-    position: relative;
-    width: 100%;
-    height: 500px; /* Mesma altura do hero-content */
-    overflow: hidden;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
 }
 
 .hero-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+    width: 100vw !important;
+    height: 400px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .btn-primary {
@@ -716,6 +760,7 @@ main {
     padding: 0.8rem 2rem;
     font-weight: 600;
     transition: all 0.3s ease;
+    margin-right: 1rem;
 }
 
 .btn-primary:hover {
@@ -730,6 +775,7 @@ main {
     padding: 0.8rem 2rem;
     font-weight: 600;
     transition: all 0.3s ease;
+    margin-right: 1rem;
 }
 
 .btn-outline-primary:hover {
@@ -740,19 +786,89 @@ main {
 
 /* Sobre Section */
 .sobre {
-    padding: 100px 0;
-    background-color: white;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
 }
 
+/* Título Sobre Nós */
 .sobre h2 {
-    color: var(--primary-color);
-    margin-bottom: 3rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--cor-um);
+    text-align: center;
+    margin: 3rem 0;
+    padding: 0 1rem;
 }
 
+/* Container dos textos */
+.sobre .texto-container {
+    max-width: 1400px;
+    margin: 0 auto !important;
+    padding: 2rem 4rem;
+}
+
+/* Parágrafos do texto */
 .sobre p {
     font-size: 1.1rem;
     line-height: 1.8;
     color: var(--text-color);
+    margin-bottom: 2rem;
+    text-align: justify;
+    padding: 0 1rem;
+}
+
+/* Ajuste das colunas de texto */
+.sobre .col-md-6 {
+    padding: 2rem;
+}
+
+/* Espaçamento entre seções */
+.sobre .row {
+    margin-bottom: 4rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sobre h2 {
+        font-size: 2rem;
+        margin: 2rem 0;
+    }
+
+    .sobre .texto-container {
+        padding: 1.5rem;
+    }
+
+    .sobre p {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .sobre .col-md-6 {
+        padding: 1rem;
+    }
+
+    .sobre .row {
+        margin-bottom: 2rem;
+    }
+
+    .container {
+        padding: 0 1rem !important;
+    }
+
+    .hero-content {
+        padding: 80px 1rem;
+    }
+
+    .sobre .texto-container {
+        padding: 1.5rem;
+    }
+
+    .sobre p {
+        padding: 0 0.5rem;
+    }
 }
 
 /* Planos Section */
@@ -1065,7 +1181,7 @@ main {
 /* Responsividade */
 @media (max-width: 768px) {
     .hero-content {
-        padding: 80px 0;
+        padding: 80px 1rem;
     }
     
     .hero h1 {
@@ -1152,9 +1268,8 @@ main {
     }
 
     .funcionalidade-detalhe img {
-        margin: 0 auto;
-        display: block;
-        max-width: 90%;
+        max-width: 70%;
+        max-height: 200px;
     }
 
     .beneficio-card {
@@ -1193,6 +1308,10 @@ main {
 
     .plano-card .mensalidade p {
         font-size: 0.9rem;
+    }
+
+    .hero-image img {
+        height: 300px !important;
     }
 }
 
@@ -1278,8 +1397,10 @@ main {
 }
 
 .funcionalidade-detalhe img {
-    max-width: 85%;
+    max-width: 65%;
     height: auto;
+    max-height: 300px;
+    object-fit: contain;
     border-radius: 10px;
     margin: 0 auto;
     display: block;
@@ -1331,8 +1452,8 @@ main {
     }
 
     .funcionalidade-detalhe img {
-        max-width: 90%;
-        margin: 10px auto;
+        max-width: 70%;
+        max-height: 200px;
     }
 
     .funcionalidade-detalhe .content-left,
@@ -1771,9 +1892,32 @@ h2::after {
     }
 }
 
+/* Ajuste da imagem do about */
 .about-image {
-    height: 50vh;
-    object-fit: cover;
+    position: relative !important;
+    width: 100% !important;
+    left: 0 !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 400px !important; /* Definindo altura fixa */
+}
+
+.about-image img {
+    width: 100vw !important;
+    height: 400px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+    .about-image,
+    .about-image img {
+        height: 300px !important;
+    }
 }
 
 /* Botão Landing Page */
@@ -1870,10 +2014,689 @@ h2::after {
     }
 
     .hero-content {
-        padding: 80px 0;
+        padding: 80px 1rem;
     }
 
     .navbar-brand img {
         height: 28px;
     }
 }
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+    .funcionalidade-detalhe img {
+        max-width: 70%;
+        max-height: 200px;
+    }
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+    .about-image img {
+        height: 300px !important;
+    }
+}
+
+/* Reset dos containers */
+.container-fluid,
+.container {
+    padding: 0 2rem !important;
+    margin: 0 auto !important;
+    max-width: 1400px !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+/* Reset da seção sobre */
+.sobre {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Ajuste da imagem de garantia */
+.garantia-container {
+    width: 120px !important;
+    height: auto !important;
+    margin: 1rem auto !important;
+    padding: 0 !important;
+    display: block !important;
+}
+
+.garantia-imagem {
+    width: 120px !important;
+    height: auto !important;
+    object-fit: contain !important;
+    margin: 0 auto !important;
+    display: block !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .garantia-container {
+        width: 100px !important;
+    }
+    
+    .garantia-imagem {
+        width: 100px !important;
+    }
+}
+
+/* Ajustes gerais da landing page */
+.landing-section {
+    padding: 4rem 0;
+}
+
+.landing-title {
+    font-size: 2.5rem;
+    color: var(--cor-um);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.landing-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    text-align: justify;
+}
+
+.landing-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.landing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .caso-imagem {
+        width: 250px;
+        height: 250px;
+        margin-bottom: 2rem;
+    }
+
+    .garantia-container {
+        max-width: 300px;
+        padding: 1rem;
+    }
+
+    .garantia-imagem {
+        max-width: 200px;
+    }
+
+    .landing-title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .landing-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        padding: 0 1rem;
+    }
+
+    .landing-section {
+        padding: 2rem 0;
+    }
+
+    .landing-card {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+}
+
+/* Ajustes de container e espaçamento */
+.landing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.landing-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+/* Efeitos de hover e interação */
+.landing-button {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin: 1rem 0;
+}
+
+.landing-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 49, 255, 0.3);
+    color: white;
+}
+
+/* Tipografia e Espaçamentos Padrão */
+.landing-page {
+    --title-size: 2.8rem;
+    --subtitle-size: 2rem;
+    --text-size: 1.1rem;
+    --card-title-size: 1.4rem;
+    --section-spacing: 6rem;
+    --card-spacing: 2rem;
+}
+
+/* Títulos da Landing Page */
+.landing-title {
+    font-size: var(--title-size);
+    font-weight: 700;
+    background: var(--gradient-title);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.landing-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+/* Subtítulos */
+.landing-subtitle {
+    font-size: var(--subtitle-size);
+    font-weight: 600;
+    color: var(--cor-um);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Textos */
+.landing-text {
+    font-size: var(--text-size);
+    line-height: 1.8;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    text-align: justify;
+}
+
+/* Cards de Casos */
+.caso-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: var(--card-spacing);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+}
+
+.caso-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 49, 255, 0.15);
+}
+
+.caso-imagem {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 2rem;
+    display: block;
+    box-shadow: 0 10px 25px rgba(0, 49, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.caso-imagem:hover {
+    transform: scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 49, 255, 0.3);
+}
+
+/* Seção de Garantia */
+.garantia-section {
+    background: linear-gradient(135deg, var(--cor-verde-claro), var(--cor-um-opaca));
+    padding: 4rem 0;
+    border-radius: 30px;
+    margin: 4rem 0;
+}
+
+.garantia-container {
+    width: 80px !important;
+    margin: 2rem auto !important;
+}
+
+.garantia-imagem {
+    width: 80px !important;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+}
+
+/* Botões */
+.landing-button {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 1.2rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 49, 255, 0.2);
+}
+
+.landing-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 49, 255, 0.3);
+    color: white;
+}
+
+/* Cards de Benefícios */
+.beneficio-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    height: 100%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+    border: none;
+}
+
+.beneficio-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 49, 255, 0.15);
+}
+
+.beneficio-card h4 {
+    font-size: var(--card-title-size);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--cor-um);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .landing-page {
+        --title-size: 2.2rem;
+        --subtitle-size: 1.8rem;
+        --text-size: 1rem;
+        --card-title-size: 1.2rem;
+        --section-spacing: 4rem;
+        --card-spacing: 1.5rem;
+    }
+
+    .caso-imagem {
+        width: 250px;
+        height: 250px;
+    }
+
+    .garantia-container {
+        width: 60px !important;
+    }
+
+    .garantia-imagem {
+        width: 60px !important;
+    }
+
+    .landing-button {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+
+    .beneficio-card {
+        padding: 1.5rem;
+    }
+
+    .landing-title::after {
+        width: 60px;
+        height: 3px;
+    }
+}
+
+/* Seções */
+.landing-section {
+    padding: var(--section-spacing) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.landing-section:nth-child(even) {
+    background: var(--light-gray);
+}
+
+/* Container */
+.landing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Efeitos de Destaque */
+.highlight-text {
+    color: var(--cor-um);
+    font-weight: 600;
+}
+
+/* Lista de Benefícios */
+.beneficios-lista li {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+    position: relative;
+}
+
+.beneficios-lista li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--cor-verde-sutil);
+    font-weight: bold;
+}
+
+/* Estilo padrão para botões de ação principal */
+.btn-comecar,
+.btn-primary,
+.btn-more-informations-plan,
+.btn-contratar {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    margin: 1rem auto;
+    min-width: 200px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 49, 255, 0.2);
+}
+
+/* Efeito de brilho sutil */
+.btn-comecar::before,
+.btn-primary::before,
+.btn-more-informations-plan::before,
+.btn-contratar::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.03),
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.03),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+}
+
+/* Animação de pulso sutil */
+.btn-comecar,
+.btn-primary,
+.btn-more-informations-plan,
+.btn-contratar {
+    animation: subtlePulse 2s infinite;
+}
+
+/* Efeito hover */
+.btn-comecar:hover,
+.btn-primary:hover,
+.btn-more-informations-plan:hover,
+.btn-contratar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 49, 255, 0.3);
+    color: white;
+}
+
+/* Container para centralização */
+.btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1.5rem 0;
+}
+
+/* Animações */
+@keyframes shimmer {
+    0% {
+        left: -150%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+@keyframes subtlePulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 8px 20px rgba(0, 49, 255, 0.2);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 10px 23px rgba(0, 49, 255, 0.25);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 8px 20px rgba(0, 49, 255, 0.2);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .btn-comecar,
+    .btn-primary,
+    .btn-more-informations-plan,
+    .btn-contratar {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+        min-width: 180px;
+    }
+}
+
+/* Estilo para a seção Como Funciona */
+.como-funciona {
+    padding: 4rem 0;
+    position: relative;
+    background: var(--light-gray);
+}
+
+.como-funciona-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: var(--gradient-title);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.etapa-container {
+    display: flex;
+    align-items: center;
+    margin: 4rem auto;
+    position: relative;
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    max-width: 900px;
+}
+
+.numero-etapa {
+    font-size: 8rem;
+    font-weight: 800;
+    color: var(--cor-um-opaca);
+    position: absolute;
+    left: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0;
+    opacity: 0.15;
+    font-family: 'Arial', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.icone-etapa {
+    font-size: 2.5rem;
+    color: var(--cor-um);
+    margin: 0 2rem;
+    position: relative;
+    z-index: 2;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--cor-um-opaca), transparent);
+    border-radius: 50%;
+    transition: all 0.4s ease;
+}
+
+.conteudo-etapa {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    padding-left: 1rem;
+}
+
+.titulo-etapa {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--cor-um);
+    margin-bottom: 0.8rem;
+}
+
+.descricao-etapa {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    .como-funciona {
+        padding: 3rem 1rem;
+    }
+
+    .como-funciona-title {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .etapa-container {
+        flex-direction: column;
+        text-align: center;
+        margin: 3rem 1rem;
+        padding: 2.5rem 1.5rem;
+        border-radius: 15px;
+    }
+
+    .numero-etapa {
+        font-size: 5rem;
+        position: absolute;
+        top: -2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0.2;
+    }
+
+    .icone-etapa {
+        font-size: 2rem;
+        width: 70px;
+        height: 70px;
+        margin: 1.5rem auto;
+    }
+
+    .conteudo-etapa {
+        padding: 0;
+        text-align: center;
+    }
+
+    .titulo-etapa {
+        font-size: 1.4rem;
+        margin: 1rem 0;
+    }
+
+    .descricao-etapa {
+        font-size: 1rem;
+        line-height: 1.5;
+        padding: 0 0.5rem;
+    }
+
+    /* Ajuste do espaçamento entre etapas */
+    .etapa-container::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -2rem;
+        width: 2px;
+        height: 2rem;
+        background: linear-gradient(to bottom, var(--cor-um-opaca), transparent);
+        transform: translateX(-50%);
+    }
+
+    .etapa-container:last-child::after {
+        display: none;
+    }
+
+    /* Efeitos de hover para touch */
+    .etapa-container:active {
+        transform: scale(0.98);
+    }
+
+    .icone-etapa {
+        box-shadow: 0 5px 15px rgba(0, 49, 255, 0.15);
+    }
+}
+
+/* Animação suave ao carregar */
+.etapa-container {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Delay para cada etapa */
+.etapa-container:nth-child(1) { animation-delay: 0.2s; }
+.etapa-container:nth-child(2) { animation-delay: 0.4s; }
+.etapa-container:nth-child(3) { animation-delay: 0.6s; }
+.etapa-container:nth-child(4) { animation-delay: 0.8s; }
