@@ -651,7 +651,7 @@ main {
 }
 
 .navbar-brand img {
-    height: 28px;
+    height: 34px;
 }
 
 .nav-link {
@@ -674,7 +674,7 @@ main {
     position: relative;
     z-index: 2;
     background: var(--gradient-primary);
-    padding: 150px 0;
+    padding: 120px 0;
 }
 
 .hero-content h1 {
@@ -1093,7 +1093,7 @@ main {
     }
 
     .navbar-brand img {
-        height: 24px;
+        height: 28px;
     }
 
     .funcionalidade-card {
@@ -1774,4 +1774,106 @@ h2::after {
 .about-image {
     height: 50vh;
     object-fit: cover;
+}
+
+/* Botão Landing Page */
+.btn-landing {
+    display: inline-flex;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--cor-verde-sutil), var(--cor-um));
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+.btn-landing i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+.btn-landing:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .d-flex.align-items-center.gap-4 {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .btn-landing {
+        margin-top: 1rem;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Ajustes do Hero */
+.hero-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.landing-link {
+    flex-shrink: 0;
+    padding-top: 1rem;
+}
+
+.btn-landing {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--cor-verde-sutil), var(--cor-um));
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Ajuste do menu mobile */
+@media (max-width: 768px) {
+    .navbar-toggler {
+        display: block !important;
+    }
+
+    .hero-wrapper {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .hero-text {
+        width: 100%;
+    }
+
+    .landing-link {
+        width: 100%;
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .hero-content {
+        padding: 80px 0;
+    }
+
+    .navbar-brand img {
+        height: 28px;
+    }
 }
