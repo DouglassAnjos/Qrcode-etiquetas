@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="icon" type="image/png" sizes="64x64" href="/public/favicon64x64.png" />
+        <title>Int Process - Gestão para marcenarias.</title>
+
+        <!-- Bootstrap 5 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!-- AOS CSS -->
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        
+        <!-- Font Awesome 6 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <!-- Botão WhatsApp -->
+        <div class="whatsapp-button">
+            <a href="https://wa.me/553799110157" class="btn-whatsapp" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+        </div>
+
+        <header class="header">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="container">
+                    <a class="navbar-brand" href="index.html">
+                        <img src="public/logo.png" alt="IntProcess Logo">
+                    </a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Hero Section -->
+            <section id="hero" class="hero">
+                <div class="hero-content">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6" data-aos="fade-right">
+                                <h1>Reduza 30% dos Custos da sua Marcenaria</h1>
+                                <p class="hero-subtitle">Otimize sua produção, elimine desperdícios e aumente seus lucros com nossa solução completa de gestão.</p>
+                                <div class="hero-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-number">30%</span>
+                                        <span class="stat-text">Redução de Custos</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number">40%</span>
+                                        <span class="stat-text">Aumento de Produtividade</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number">100%</span>
+                                        <span class="stat-text">Controle Total</span>
+                                    </div>
+                                </div>
+                                <div class="hero-buttons">
+                                    <a href="#contato" class="btn btn-primary btn-lg">Começar Agora</a>
+                                    <a href="#diferenciais" class="btn btn-outline-primary btn-lg">Ver Diferenciais</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="public/hero-image.png" alt="Marcenaria" class="img-fluid">
+                </div>
+            </section>
+
+            <!-- Diferenciais Section -->
+            <section id="diferenciais" class="diferenciais">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Por que escolher a IntProcess?</h2>
+                    <div class="row">
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="diferencial-card">
+                                <i class="fas fa-calculator"></i>
+                                <h3>Otimização de Materiais</h3>
+                                <p>Reduza desperdícios e custos com planos de corte inteligentes que otimizam o uso de materiais.</p>
+                                <a href="#orcamentos" class="btn btn-outline-primary mt-3">Saiba Mais</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="diferencial-card">
+                                <i class="fas fa-robot"></i>
+                                <h3>Automação Total</h3>
+                                <p>Integre seu projeto 3D diretamente com a produção, eliminando erros e retrabalhos.</p>
+                                <a href="#integracao-3d" class="btn btn-outline-primary mt-3">Saiba Mais</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="diferencial-card">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>Controle Total</h3>
+                                <p>Acompanhe toda sua produção em tempo real, desde o orçamento até a entrega.</p>
+                                <a href="#controle-producao" class="btn btn-outline-primary mt-3">Saiba Mais</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Problemas e Soluções -->
+            <section id="problemas" class="problemas">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Problemas que Resolvemos</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-4" data-aos="fade-right">
+                            <div class="problema-card">
+                                <div class="problema-header">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <h3>Problemas Comuns</h3>
+                                </div>
+                                <ul class="problema-list">
+                                    <li><i class="fas fa-times"></i> Desperdício de materiais</li>
+                                    <li><i class="fas fa-times"></i> Erros em orçamentos</li>
+                                    <li><i class="fas fa-times"></i> Falta de controle de produção</li>
+                                    <li><i class="fas fa-times"></i> Retrabalhos constantes</li>
+                                    <li><i class="fas fa-times"></i> Dificuldade em gerenciar pedidos</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4" data-aos="fade-left">
+                            <div class="solucao-card">
+                                <div class="solucao-header">
+                                    <i class="fas fa-check-circle"></i>
+                                    <h3>Nossas Soluções</h3>
+                                </div>
+                                <ul class="solucao-list">
+                                    <li><i class="fas fa-check"></i> Otimização automática de materiais</li>
+                                    <li><i class="fas fa-check"></i> Orçamentos precisos e rápidos</li>
+                                    <li><i class="fas fa-check"></i> Controle total da produção</li>
+                                    <li><i class="fas fa-check"></i> Eliminação de retrabalhos</li>
+                                    <li><i class="fas fa-check"></i> Gestão simplificada de pedidos</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Depoimentos -->
+            <section id="depoimentos" class="depoimentos">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">O que dizem nossos clientes</h2>
+                    <div class="row">
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="depoimento-card">
+                                <div class="depoimento-content">
+                                    <i class="fas fa-quote-left"></i>
+                                    <p>"Reduzimos 35% dos custos de produção e aumentamos nossa produtividade em 40% após implementar o IntProcess."</p>
+                                </div>
+                                <div class="depoimento-author">
+                                    <strong>João Silva</strong>
+                                    <span>Proprietário - Marcenaria Silva</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="depoimento-card">
+                                <div class="depoimento-content">
+                                    <i class="fas fa-quote-left"></i>
+                                    <p>"O controle total da produção e a integração com o SketchUp mudaram completamente nossa forma de trabalhar."</p>
+                                </div>
+                                <div class="depoimento-author">
+                                    <strong>Maria Santos</strong>
+                                    <span>Diretora - Móveis Santos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="depoimento-card">
+                                <div class="depoimento-content">
+                                    <i class="fas fa-quote-left"></i>
+                                    <p>"Agora temos visibilidade total do processo produtivo e conseguimos entregar no prazo com mais facilidade."</p>
+                                </div>
+                                <div class="depoimento-author">
+                                    <strong>Pedro Oliveira</strong>
+                                    <span>Gerente - Móveis Oliveira</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Como Funciona -->
+            <section id="como-funciona" class="como-funciona">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Como Funciona</h2>
+                    <div class="row">
+                        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="passo-card">
+                                <div class="passo-numero">1</div>
+                                <i class="fas fa-handshake"></i>
+                                <h3>Contato Inicial</h3>
+                                <p>Agende uma demonstração personalizada do sistema</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="passo-card">
+                                <div class="passo-numero">2</div>
+                                <i class="fas fa-graduation-cap"></i>
+                                <h3>Treinamento</h3>
+                                <p>Receba treinamento completo da nossa equipe</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="passo-card">
+                                <div class="passo-numero">3</div>
+                                <i class="fas fa-rocket"></i>
+                                <h3>Implementação</h3>
+                                <p>Comece a usar o sistema com suporte dedicado</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                            <div class="passo-card">
+                                <div class="passo-numero">4</div>
+                                <i class="fas fa-chart-bar"></i>
+                                <h3>Resultados</h3>
+                                <p>Acompanhe a transformação do seu negócio</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="#contato" class="btn btn-primary btn-lg">Agende sua Demonstração</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dúvidas Frequentes -->
+            <section id="duvidas" class="duvidas">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Dúvidas Frequentes</h2>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="accordion" id="duvidasAccordion">
+                                <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+                                    <h3 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#duvida1">
+                                            Quanto tempo leva para implementar o sistema?
+                                        </button>
+                                    </h3>
+                                    <div id="duvida1" class="accordion-collapse collapse show" data-bs-parent="#duvidasAccordion">
+                                        <div class="accordion-body">
+                                            A implementação é rápida e pode ser feita em até 5 dias úteis. Nossa equipe oferece suporte completo durante todo o processo.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
+                                    <h3 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#duvida2">
+                                            Preciso ter conhecimento técnico para usar o sistema?
+                                        </button>
+                                    </h3>
+                                    <div id="duvida2" class="accordion-collapse collapse" data-bs-parent="#duvidasAccordion">
+                                        <div class="accordion-body">
+                                            Não! O sistema foi desenvolvido para ser intuitivo e fácil de usar. Além disso, oferecemos treinamento completo e suporte contínuo.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item" data-aos="fade-up" data-aos-delay="300">
+                                    <h3 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#duvida3">
+                                            Como funciona o suporte técnico?
+                                        </button>
+                                    </h3>
+                                    <div id="duvida3" class="accordion-collapse collapse" data-bs-parent="#duvidasAccordion">
+                                        <div class="accordion-body">
+                                            Oferecemos suporte prioritário via WhatsApp, e-mail e telefone. Nossa equipe está sempre pronta para ajudar você.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item" data-aos="fade-up" data-aos-delay="400">
+                                    <h3 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#duvida4">
+                                            Posso testar o sistema antes de contratar?
+                                        </button>
+                                    </h3>
+                                    <div id="duvida4" class="accordion-collapse collapse" data-bs-parent="#duvidasAccordion">
+                                        <div class="accordion-body">
+                                            Sim! Agende uma demonstração personalizada e conheça todas as funcionalidades do sistema.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Casos de Sucesso -->
+            <section id="casos-sucesso" class="casos-sucesso">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Casos de Sucesso</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-4" data-aos="fade-right">
+                            <div class="caso-card">
+                                <div class="caso-header">
+                                    <img src="public/caso1.jpg" alt="Caso de Sucesso 1" class="caso-imagem">
+                                    <div class="caso-overlay">
+                                        <h3>Marcenaria Silva</h3>
+                                        <p>Redução de 35% nos custos de produção</p>
+                                    </div>
+                                </div>
+                                <div class="caso-content">
+                                    <h4>Desafio</h4>
+                                    <p>Alta taxa de desperdício de materiais e falta de controle na produção.</p>
+                                    <h4>Solução</h4>
+                                    <p>Implementação do sistema IntProcess com foco em otimização de corte e controle de produção.</p>
+                                    <h4>Resultados</h4>
+                                    <ul>
+                                        <li>Redução de 35% nos custos de produção</li>
+                                        <li>Aumento de 40% na produtividade</li>
+                                        <li>Eliminação de retrabalhos</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4" data-aos="fade-left">
+                            <div class="caso-card">
+                                <div class="caso-header">
+                                    <img src="public/caso2.jpg" alt="Caso de Sucesso 2" class="caso-imagem">
+                                    <div class="caso-overlay">
+                                        <h3>Móveis Santos</h3>
+                                        <p>Aumento de 50% nas vendas</p>
+                                    </div>
+                                </div>
+                                <div class="caso-content">
+                                    <h4>Desafio</h4>
+                                    <p>Dificuldade em gerenciar pedidos e entregas no prazo.</p>
+                                    <h4>Solução</h4>
+                                    <p>Implementação do sistema completo com foco em gestão de pedidos e controle de produção.</p>
+                                    <h4>Resultados</h4>
+                                    <ul>
+                                        <li>Aumento de 50% nas vendas</li>
+                                        <li>100% das entregas no prazo</li>
+                                        <li>Controle total do estoque</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Garantia -->
+            <section id="garantia" class="garantia">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2>Garantia de Satisfação</h2>
+                            <p class="lead">Se você não ficar satisfeito com o sistema nos primeiros 30 dias, devolvemos seu dinheiro.</p>
+                            <ul class="garantia-list">
+                                <li><i class="fas fa-check-circle"></i> 30 dias de garantia incondicional</li>
+                                <li><i class="fas fa-check-circle"></i> Suporte prioritário incluído</li>
+                                <li><i class="fas fa-check-circle"></i> Treinamento completo</li>
+                                <li><i class="fas fa-check-circle"></i> Implementação personalizada</li>
+                            </ul>
+                            <div class="mt-4">
+                                <a href="#contato" class="btn btn-primary btn-lg">Começar Agora</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <img src="public/garantia.png" alt="Garantia" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Intmob e Soluções Integradas -->
+            <section id="solucoes-integradas" class="solucoes-integradas">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">3 Soluções em 1 Plataforma</h2>
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <div class="solucao-principal">
+                                <h3>Intmob - Plugin de Modelagem 3D</h3>
+                                <p class="lead">Transforme seus projetos 3D em dados produtivos instantaneamente</p>
+                                <ul class="solucao-features">
+                                    <li><i class="fas fa-check-circle"></i> Integração direta com SketchUp</li>
+                                    <li><i class="fas fa-check-circle"></i> Compatibilidade com outros softwares 3D</li>
+                                    <li><i class="fas fa-check-circle"></i> Conversão automática para dados produtivos</li>
+                                    <li><i class="fas fa-check-circle"></i> Otimização de materiais integrada</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" data-aos="fade-left">
+                            <div class="solucoes-grid">
+                                <div class="solucao-item">
+                                    <i class="fas fa-cube"></i>
+                                    <h4>Plugin Intmob</h4>
+                                    <p>Modelagem 3D integrada com produção</p>
+                                </div>
+                                <div class="solucao-item">
+                                    <i class="fas fa-chart-line"></i>
+                                    <h4>ERP</h4>
+                                    <p>Gestão completa do negócio</p>
+                                </div>
+                                <div class="solucao-item">
+                                    <i class="fas fa-industry"></i>
+                                    <h4>PCP</h4>
+                                    <p>Controle total da produção</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Planos Detalhada -->
+            <section id="planos-detalhados" class="planos-detalhados">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Escolha o Plano Ideal para sua Marcenaria</h2>
+                    <div class="row">
+                        <!-- Plano Start -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="plano-detalhado-card">
+                                <div class="plano-header">
+                                    <h3>Plano Start</h3>
+                                    <div class="preco">
+                                        <span class="valor">R$ 6.800,00</span>
+                                        <span class="periodo">1º ano sem mensalidade</span>
+                                    </div>
+                                </div>
+                                <div class="plano-body">
+                                    <h4>Ideal para:</h4>
+                                    <ul>
+                                        <li>Marcenarias iniciantes</li>
+                                        <li>Quem quer começar a automação</li>
+                                        <li>Negócios com até 5 funcionários</li>
+                                        <li>Produção básica de móveis</li>
+                                    </ul>
+                                    <h4>Destaques:</h4>
+                                    <ul>
+                                        <li>Plugin Intmob para SketchUp</li>
+                                        <li>Plano de corte básico</li>
+                                        <li>Controle de estoque simples</li>
+                                        <li>2 licenças plataforma online</li>
+                                    </ul>
+                                </div>
+                                <div class="plano-footer">
+                                    <a href="#contato" class="btn btn-primary w-100">Começar Agora</a>
+                                    <p class="economia">Economize até 15% em materiais</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Plano Standard -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="plano-detalhado-card featured">
+                                <div class="plano-header">
+                                    <h3>Plano Standard</h3>
+                                    <div class="preco">
+                                        <span class="valor">R$ 11.199,00</span>
+                                        <span class="periodo">1º ano sem mensalidade</span>
+                                    </div>
+                                </div>
+                                <div class="plano-body">
+                                    <h4>Ideal para:</h4>
+                                    <ul>
+                                        <li>Marcenarias em crescimento</li>
+                                        <li>Produção média de móveis</li>
+                                        <li>Até 10 funcionários</li>
+                                        <li>Necessidade de mais controle</li>
+                                    </ul>
+                                    <h4>Destaques:</h4>
+                                    <ul>
+                                        <li>2 licenças do Plugin Intmob</li>
+                                        <li>Plano de corte avançado</li>
+                                        <li>Gestão financeira completa</li>
+                                        <li>Licenças ilimitadas plataforma</li>
+                                    </ul>
+                                </div>
+                                <div class="plano-footer">
+                                    <a href="#contato" class="btn btn-primary w-100">Começar Agora</a>
+                                    <p class="economia">Aumente sua produtividade em 30%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Plano Plus -->
+                        <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="plano-detalhado-card">
+                                <div class="plano-header">
+                                    <h3>Plano Plus</h3>
+                                    <div class="preco">
+                                        <span class="valor">R$ 14.990,00</span>
+                                        <span class="periodo">1º ano sem mensalidade</span>
+                                    </div>
+                                </div>
+                                <div class="plano-body">
+                                    <h4>Ideal para:</h4>
+                                    <ul>
+                                        <li>Grandes marcenarias</li>
+                                        <li>Produção industrial</li>
+                                        <li>Mais de 10 funcionários</li>
+                                        <li>Necessidade de automação total</li>
+                                    </ul>
+                                    <h4>Destaques:</h4>
+                                    <ul>
+                                        <li>5 licenças do Plugin Intmob</li>
+                                        <li>Engenharia de usinagens</li>
+                                        <li>API de integração</li>
+                                        <li>Suporte VIP 24/7</li>
+                                    </ul>
+                                </div>
+                                <div class="plano-footer">
+                                    <a href="#contato" class="btn btn-primary w-100">Começar Agora</a>
+                                    <p class="economia">Automatize 100% da sua produção</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Final -->
+            <section id="cta" class="cta">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 text-center" data-aos="fade-up">
+                            <h2>Comece a Transformar sua Marcenaria Hoje</h2>
+                            <p class="lead">1º ano sem mensalidade e suporte prioritário incluído</p>
+                            <div class="cta-buttons">
+                                <a href="#contato" class="btn btn-primary btn-lg">Começar Agora</a>
+                                <a href="https://wa.me/553799110157" class="btn btn-success btn-lg" target="_blank">
+                                    <i class="fab fa-whatsapp"></i> Falar com Consultor
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contato -->
+            <section id="contato" class="contato">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-aos="fade-up">Entre em Contato</h2>
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <form id="contactForm" class="contact-form" data-aos="fade-up">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Nome completo" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" placeholder="E-mail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="tel" class="form-control" placeholder="Telefone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-control" required>
+                                        <option value="">Selecione o plano de interesse</option>
+                                        <option value="start">Plano Start</option>
+                                        <option value="standard">Plano Standard</option>
+                                        <option value="plus">Plano Plus</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" rows="5" placeholder="Mensagem" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Enviar Mensagem</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="public/logo.png" alt="IntProcess Logo" class="footer-logo">
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Contato</h4>
+                        <p><i class="fas fa-envelope"></i> suporte@intprocess.com.br</p>
+                        <p><i class="fas fa-phone"></i> +37 99911-0157</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Redes Sociais</h4>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/intprocess.app.br/" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.youtube.com/channel/UCRsj9WS5TApIrA25JVk8X3g" target="_blank"><i class="fab fa-youtube"></i></a>
+                            <a href="https://wa.me/553799110157" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 IntProcess. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html> 
