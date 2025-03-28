@@ -23,7 +23,7 @@ $(document).ready(() => {
 
         setTimeout(() => {
             changePicture();
-        }, 5000);
+        }, 5000);    
 
         function changePicture() {
             $("#section-home").css(
