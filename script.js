@@ -373,4 +373,3 @@ document.addEventListener('DOMContentLoaded', function() {
 document.querySelectorAll('.formas-pagamento .btn-primary').forEach(btn => {
     btn.classList.add('btn-contratar');
 });
-    
